@@ -57,7 +57,7 @@ class Result<T> {
     expectations?: string[];
     value?: T;
 
-    constructor(private wasSuccessful: boolean) {
+    constructor(public wasSuccessful: boolean) {
     }
 
     ifSuccess<U>(next: (foo: SuccessResult<T>) => Result<U>): Result<U> {
@@ -121,7 +121,7 @@ class Parser<T> {
         return this.fn(input);
     }
 
-    Then<U>(second: (_: T) => Parser<U>): Parser<U> {
+    then<U>(second: (_: T) => Parser<U>): Parser<U> {
         if (!second) {
             throw new Error("no second parser in Then()");
         }
@@ -130,12 +130,24 @@ class Parser<T> {
             return this.parse(i).ifSuccess(s => second(s.value).parse(s.remainder));
         });
     }
+
+    select<U>(convert: (_: T) => U) {
+        if (!convert) {
+            throw new Error("no map function provided to select()");
+        }
+
+        return this.then(t => Parse.return(convert(t)));
+    }
 }
 
 type Predicate<T> = (input: T) => boolean;
 
 const Parse = {
-    Char(charOrPredicate: string | Predicate<string>, description: string) {
+    return<T>(value: T) {
+        return new Parser(i => Result.Success(value, i));
+    },
+
+    char(charOrPredicate: string | Predicate<string>, description: string) {
         if (!charOrPredicate) { throw new Error("charOrPredicate missing"); }
         if (!description) { throw new Error("description missing"); }
 
@@ -156,15 +168,37 @@ const Parse = {
                     return Result.Success(i.current, i.advance());
                 }
 
-                return Result.Failure(i, `Unexpected ${i.current}`, [ description ]);
+                return Result.Failure<string>(i, `Unexpected ${i.current}`, [ description ]);
             }
 
-            return Result.Failure(i, "Unexpected end of input reached", [ description ]);
+            return Result.Failure<string>(i, "Unexpected end of input reached", [ description ]);
         });
+    },
+
+    charExcept(charPredicate: Predicate<string>, description: string) {
+        return Parse.char(c => !charPredicate(c), `any character except ${description}`);
     }
 };
 
-let foo = Parse.Char('a', 'A');
-let result = foo.parse(new Input("a"));
+let myGrammar =
+    Parse.char(c => /[a-zA-Z]/.test(c), 'A letter')
+        .then(c1 =>
+            Parse.char(c => /[0-9]/.test(c), 'A number')
+            .then(c2 => Parse.return({ [c1]: c2 })
+            )
+        );
 
-console.log(result);
+function testInput(inputString: string) {
+    const result = myGrammar.parse(new Input(inputString));
+
+    if (result.wasSuccessful) {
+        console.log("Result: ", JSON.stringify(result.value, null, '  '));
+    } else {
+        console.error(`Parsing Error: (${result.remainder!.line}:${result.remainder!.column}): ${result.message}, expected: ${result.expectations!.join(', ')}`);
+    }
+}
+
+testInput("ab");
+testInput("a");
+testInput("3");
+testInput("d5");
