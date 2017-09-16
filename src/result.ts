@@ -26,6 +26,12 @@ export class Result<T> {
 
         return Result.Failure(remainder, message, expectations);
     }
+
+    ifFailure<U>(next: (foo: Result<any>) => Result<any>): Result<U> {
+        const result = this;
+
+        return (result.wasSuccessful ? result : next(result)) as Result<U>;
+    }
 }
 
 export class SuccessResult<T> extends Result<T> {

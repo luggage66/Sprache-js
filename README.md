@@ -19,11 +19,11 @@ var parseA = Parse.char('A').atLeastOnce();
 Sprache provides a number of built-in functions that can make bigger parsers from smaller ones, often callable via Linq query comprehensions:
 
 ```js
-Parser<string> identifier = sequence(function*() {
-    const leading = yield Parse.whiteSpace.many()
-    const first = yield Parse.letter.once()
-    const rest = yield Parse.letterOrDigit.many()
-    const trailing = yield Parse.whiteSpace.many()
+const identifier: Parser<string> = Parse.query(function*() {
+    const leading = yield Parse.whiteSpace.many();
+    const first = yield Parse.letter.once();
+    const rest = yield Parse.letterOrDigit.many();
+    const trailing = yield Parse.whiteSpace.many();
     return Parse.return([first].concat(rest).join(''));
 });
 

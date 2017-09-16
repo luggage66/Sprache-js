@@ -21,13 +21,24 @@ export type ParserFunction<T> = (input: IInput) => Result<T>;
 type Predicate<T> = (input: T) => boolean;
 
 export interface ParserHelpers {
-    many<T>(): Parser<T[]>;
-    token<T>(): Parser<T>;
     tryParse<T>(input: string): Result<T>;
     parse<T>(input: string): T;
 }
 
-const helpers: ParserHelpers = {
+export interface ParserApi {
+    many<T>(): Parser<T[]>;
+    token<T>(): Parser<T>;
+
+    concat<T>(second: Parser<T[]>): Parser<T[]>;
+    select<T, U>(convert: (_: T) => U): Parser<U>;
+    then<T, U>(this: Parser<T>, second: (_: T) => Parser<U>): Parser<U>;
+    once<T>(): Parser<T[]>;
+    or<T>(second: Parser<T>): Parser<T>;
+
+    text(): Parser<string>;
+}
+
+const parserFunctions: ParserHelpers & ParserApi = {
     tryParse<T>(this: Parser<T>, input: string): Result<T> {
         return this(new Input(input));
     },
@@ -67,21 +78,65 @@ const helpers: ParserHelpers = {
     token<T>(this: Parser<T>): Parser<T> {
         const parser = this;
         return Parse.query(function*() {
-            yield Parse.WhiteSpace.many();
+            yield Parse.whiteSpace.many();
 
             const item = yield parser;
 
-            yield Parse.WhiteSpace.many();
+            yield Parse.whiteSpace.many();
 
             return Parse.return(item);
         });
+    },
+    concat<T>(this: Parser<T[]>, second: Parser<T[]>): Parser<T[]> {
+        const first = this;
+
+        return first.then(f => second.select(f.concat));
+    },
+    select<T, U>(this: Parser<T>, convert: (_: T) => U): Parser<U> {
+        const parser = this;
+
+        return parser.then(t => Parse.return(convert(t)));
+    },
+
+    then<T, U>(this: Parser<T>, second: (_: T) => Parser<U>): Parser<U> {
+        const first = this;
+
+        return MakeParser(i => first(i).ifSuccess(s => second(s.value)(s.remainder)));
+    },
+
+    once<T>(this: Parser<T>): Parser<T[]> {
+        const parser = this;
+
+        return parser.select((r: T) => [ r ]);
+    },
+
+    or<T>(this: Parser<T>, second: Parser<T>): Parser<T> {
+        const first = this;
+
+        return MakeParser(i => {
+            const fr = first(i);
+            if (!fr.wasSuccessful) {
+                return second(i).ifFailure(sf => DetermineBestError(fr as FailureResult<T>, sf as FailureResult<T>));
+            }
+
+            if (fr.remainder.isEqual(i)) {
+                return second(i).ifFailure(sf => fr);
+            }
+
+            return fr;
+        });
+    },
+
+    text(this: Parser<string[]> ): Parser<string> {
+        const characters = this;
+        return characters.select((chs: string[]) => chs.join(''));
     }
 };
 
-export type Parser<T> = ParserFunction<T> & ParserHelpers;
+export type Parser<T> = ParserFunction<T> & ParserHelpers & ParserApi;
 
 function MakeParser<T>(fn: ParserFunction<T>): Parser<T> {
-    return Object.assign(fn, helpers);
+    return Object.assign(fn, parserFunctions);
 }
 
 function ParseChar(charOrPredicate: string | Predicate<string>, description: string): Parser<string> {
@@ -113,8 +168,10 @@ function ParseChar(charOrPredicate: string | Predicate<string>, description: str
 }
 
 const Parse = {
-    Char: ParseChar,
-    WhiteSpace: ParseChar(c => / /.test(c), "whitespace"),
+    char: ParseChar,
+    whiteSpace: ParseChar(c => / /.test(c), "whitespace"),
+    letter: ParseChar(c => /[a-zA-Z]/.test(c), "a letter"),
+    letterOrDigit: ParseChar(c => /[a-zA-Z0-9]/.test(c), "a letter or digit"),
     return<T>(value: T): Parser<T> {
         return MakeParser(i => Result.Success(value, i));
     },

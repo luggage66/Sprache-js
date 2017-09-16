@@ -2,8 +2,8 @@ import { Result } from '../result';
 import { Parse, Parser, ParserHelpers } from '../parse';
 import { IInput } from '../input';
 
-const Letter = Parse.Char(c => /[a-zA-Z]/.test(c), "A letter");
-const Digit = Parse.Char(c => /[0-9]/.test(c), "A number");
+const Letter = Parse.char(c => /[a-zA-Z]/.test(c), "A letter");
+const Digit = Parse.char(c => /[0-9]/.test(c), "A number");
 
 const DigitOrLetter = Parse.queryOr<string>(function*() {
     yield Digit;
@@ -12,7 +12,7 @@ const DigitOrLetter = Parse.queryOr<string>(function*() {
 
 const LiteralToken = (word: string) => Parse.query(function*() {
     for (const letter of word) {
-        yield Parse.Char(letter, letter);
+        yield Parse.char(letter, letter);
     }
 
     return Parse.return(word);
@@ -21,7 +21,7 @@ const LiteralToken = (word: string) => Parse.query(function*() {
 const SeparatedList = (separator: string, parser: Parser<any>) => Parse.query(function*() {
     const firstItem = yield parser;
     const rest = yield Parse.query(function*() {
-        yield Parse.Char(separator, separator);
+        yield Parse.char(separator, separator);
         const item = yield parser;
 
         return Parse.return(item);
@@ -34,13 +34,13 @@ const Identifier = Parse.query(function*() {
     const letter = yield Letter;
     const rest = yield DigitOrLetter.many();
 
-    return Parse.return([letter].concat(rest).join('')) as any;
+    return Parse.return([letter].concat(rest)).text() as any;
 }).token();
 
 const Comparison = Parse.query(function*() {
     const lhs = yield Identifier;
 
-    yield Parse.Char('=', 'Equals Sign');
+    yield Parse.char('=', 'Equals Sign');
 
     const rhs = yield Identifier;
 
