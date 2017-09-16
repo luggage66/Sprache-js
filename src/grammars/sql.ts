@@ -5,7 +5,7 @@ import { IInput } from '../input';
 const Letter = Parse.Char(c => /[a-zA-Z]/.test(c), "A letter");
 const Digit = Parse.Char(c => /[0-9]/.test(c), "A number");
 
-const DigitOrLetter = or(function*() {
+const DigitOrLetter = or<string, string>(function*() {
     yield Digit;
     yield Letter;
 });
@@ -15,7 +15,7 @@ const LiteralToken = (word: string) => sequence(function*() {
         yield Parse.Char(letter, letter);
     }
 
-    return word as any;
+    return Parse.return(word);
 });
 
 const SeparatedList = (separator: string, parser: Parser<any>) => sequence(function*() {
@@ -24,17 +24,17 @@ const SeparatedList = (separator: string, parser: Parser<any>) => sequence(funct
         yield Parse.Char(separator, separator);
         const item = yield parser;
 
-        return item;
+        return Parse.return(item);
     }).many();
 
-    return [firstItem].concat(rest) as any;
+    return Parse.return([firstItem].concat(rest));
 });
 
 const Identifier = sequence(function*() {
     const letter = yield Letter;
     const rest = yield DigitOrLetter.many();
 
-    return [letter].concat(rest).join('') as any;
+    return Parse.return([letter].concat(rest).join('')) as any;
 }).token();
 
 const Comparison = sequence(function*() {
@@ -44,11 +44,11 @@ const Comparison = sequence(function*() {
 
     const rhs = yield Identifier;
 
-    return {
+    return Parse.return({
         $type: 'COMPARISON',
         lhs,
         rhs
-    } as any;
+    });
 });
 
 const SelectClause = sequence(function*() {
@@ -56,10 +56,10 @@ const SelectClause = sequence(function*() {
 
     const columns = yield SeparatedList(',', Identifier);
 
-    return {
+    return Parse.return({
         $type: "SELECT_CLAUSE",
         columns
-    } as any;
+    });
 });
 
 const FromClause = sequence(function*() {
@@ -67,10 +67,10 @@ const FromClause = sequence(function*() {
 
     const tableName = yield Identifier;
 
-    return {
+    return Parse.return({
         $type: 'FROM_CLAUSE',
         tableName
-    } as any;
+    });
 });
 
 const WhereClause = sequence(function*() {
@@ -78,23 +78,26 @@ const WhereClause = sequence(function*() {
 
     const conditions = yield Comparison.many();
 
-    return {
+    return Parse.return({
         $type: 'WHERE_CLAUSE',
         conditions
-    } as any;
+    });
 });
 
+interface SelectStatement {
+    statement: string;
+}
 const SelectStatement = sequence(function*() {
     const select = yield SelectClause;
     const from = yield FromClause;
     const where = yield WhereClause;
 
-    return {
+    return Parse.return({
         statement: 'select',
         select,
         from,
         where
-    } as any;
+    });
 });
 
 export {SelectStatement};

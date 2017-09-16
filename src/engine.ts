@@ -23,9 +23,24 @@ type Predicate<T> = (input: T) => boolean;
 export interface ParserHelpers {
     many<T>(): Parser<T[]>;
     token<T>(): Parser<T>;
+    tryParse<T>(input: string): Result<T>;
+    parse<T>(input: string): T;
 }
 
 const helpers: ParserHelpers = {
+    tryParse<T>(this: Parser<T>, input: string): Result<T> {
+        return this(new Input(input));
+    },
+    parse<T>(this: Parser<T>, input: string): T {
+        const result = this(new Input(input));
+
+        if (result.wasSuccessful) {
+            return result.value!;
+        }
+
+        // tslint:disable-next-line:max-line-length
+        throw new Error(`Parsing Error: (${result.remainder!.line}:${result.remainder!.column}): ${result.message}, expected: ${result.expectations!.join(', ')}`);
+    },
     many<T>(this: Parser<T>): Parser<T[]> {
         if (!this) {
             throw new Error("parser missing");
@@ -58,7 +73,7 @@ const helpers: ParserHelpers = {
 
             yield Parse.WhiteSpace.many();
 
-            return item;
+            return Parse.return(item);
         });
     }
 };
@@ -99,46 +114,51 @@ function ParseChar(charOrPredicate: string | Predicate<string>, description: str
 
 const Parse = {
     Char: ParseChar,
-    WhiteSpace: ParseChar(c => / /.test(c), "whitespace")
+    WhiteSpace: ParseChar(c => / /.test(c), "whitespace"),
+    return<T>(value: T): Parser<T> {
+        return MakeParser(i => Result.Success(value, i));
+    }
 };
 
-export function sequence<T, U>(generator: () => Iterator<Parser<T>>): Parser<any> {
+interface MyIterator<T, U> {
+    next(value?: T): IteratorResult<T>;
+    return?(value?: T): IteratorResult<T>;
+    throw?(e?: any): IteratorResult<T>;
+}
+
+export function sequence<T, U>(generator: () => IterableIterator<Parser<T>>): Parser<U> {
     return MakeParser((input: IInput) => {
 
         const iterator = generator();
 
         // Loop state
-        let result: Result<T>;
+        let result: Result<U | T>;
         let nextParser: Parser<T>;
         let done = false;
 
         do {
+            const nextStep = nextSequenceStep({ iterator, result: result! as Result<T> });
 
-            ({ value: nextParser, done } = nextSequenceStep({ iterator, result: result! }));
+            nextParser = nextStep.value as Parser<T>; // You yield Parser<T>'s and return U's
+            done = nextStep.done;
 
-            if (!done) {
-                result = nextParser(input);
-            }
+            result = nextParser(input);
             input = result!.remainder;
         } while (!done);
 
-        if (result!.wasSuccessful) {
-            return Result.Success(nextParser as any, input);
-        }
-
-        return result!;
+        return result! as Result<U>;
     });
 }
 
-function nextSequenceStep<T>({ iterator, result }: { iterator: Iterator<Parser<T>>, result: Result<T>}) {
+function nextSequenceStep<T>({ iterator, result }: { iterator: IterableIterator<Parser<T>>, result: Result<T>}) {
     if (result && !result.wasSuccessful) {
-        return iterator.return!("ERROR 43!!!");
+        return iterator.return!(Parse.return("ERROR 4323441!!"));
     } else {
         return iterator.next(result ? result.value! : undefined);
     }
 }
 
-export function or<T, U>(generator: () => Iterator<Parser<T>>): Parser<any> {
+export function or<T, U>(generator: () => IterableIterator<Parser<T>>): Parser<U> {
     return MakeParser((input: IInput) => {
 
         const iterator = generator();
@@ -167,7 +187,7 @@ export function or<T, U>(generator: () => Iterator<Parser<T>>): Parser<any> {
     });
 }
 
-function nextOrStep<T>({ iterator, result }: { iterator: Iterator<Parser<T>>, result: Result<T>}) {
+function nextOrStep<T>({ iterator, result }: { iterator: IterableIterator<Parser<T>>, result: Result<T>}) {
     if (result && result.wasSuccessful) {
         return iterator.return!(result.value);
     } else {

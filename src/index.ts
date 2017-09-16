@@ -25,18 +25,18 @@ const Assignment = sequence(function*() {
 
     const rhs = yield Expression;
 
-    return { type: 'assignment', lhs, rhs } as any;
+    return Parse.return({ type: 'assignment', lhs, rhs });
 });
 
 const Identifier = sequence(function*() {
     const letter = yield Letter;
     const rest = yield DigitOrLetter.many();
 
-    return [letter].concat(rest).join('') as any;
+    return Parse.return([letter].concat(rest).join('')) as any;
 }).token();
 
 function testInput(inputString: string) {
-    const result = SelectStatement(new Input(inputString));
+    const result = SelectStatement.tryParse(inputString);
 
     if (result.wasSuccessful) {
         console.log("Result: ", JSON.stringify(result.value, null, '  '));
@@ -51,6 +51,6 @@ testInput("SELECT foo, bar, baz FROM myTable WHERE a = b");
 // testInput("3");
 // testInput("d5");
 // testInput("-");
-testInput(" df =    dsfs   ");
-testInput("d");
+// testInput(" df =    dsfs   ");
+// testInput("d");
 // testInput("d==");
