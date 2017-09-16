@@ -5,7 +5,7 @@ import { IInput } from '../input';
 const Letter = Parse.Char(c => /[a-zA-Z]/.test(c), "A letter");
 const Digit = Parse.Char(c => /[0-9]/.test(c), "A number");
 
-const DigitOrLetter = or<string, string>(function*() {
+const DigitOrLetter = or<string>(function*() {
     yield Digit;
     yield Letter;
 });

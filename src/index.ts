@@ -45,7 +45,7 @@ function testInput(inputString: string) {
     }
 }
 
-testInput("SELECT foo, bar, baz FROM myTable WHERE a = b");
+testInput("SELECT foo1, bar2, baz FROM myTable WHERE a = b");
 // testInput("ab");
 // testInput("a");
 // testInput("3");

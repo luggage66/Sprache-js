@@ -158,14 +158,14 @@ function nextSequenceStep<T>({ iterator, result }: { iterator: IterableIterator<
     }
 }
 
-export function or<T, U>(generator: () => IterableIterator<Parser<T>>): Parser<U> {
+export function or<U>(generator: () => IterableIterator<Parser<any>>): Parser<U> {
     return MakeParser((input: IInput) => {
 
         const iterator = generator();
 
         // Loop state
-        let result: Result<T>;
-        let nextParser: Parser<T>;
+        let result: Result<any>;
+        let nextParser: Parser<any>;
         let done = false;
 
         do {
@@ -180,10 +180,14 @@ export function or<T, U>(generator: () => IterableIterator<Parser<T>>): Parser<U
         } while (!done);
 
         if (result!.wasSuccessful) {
-            return Result.Success(nextParser as any, input);
+            return Result.Success(nextParser as Parser<U>, input);
         }
 
-        return result!;
+        if (!result!) {
+            throw Error("Error empty-or?");
+        }
+
+        return result! as any;
     });
 }
 
