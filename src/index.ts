@@ -1,6 +1,7 @@
 import { Result, FailureResult, SuccessResult } from './result';
 import { IInput, Input } from './input';
 import { Parse, or, sequence } from './engine';
+import { SelectStatement } from './grammars/sql';
 
 const Letter = Parse.Char(c => /[a-zA-Z]/.test(c), "A letter");
 const Digit = Parse.Char(c => /[0-9]/.test(c), "A number");
@@ -12,19 +13,19 @@ const DigitOrLetter = or(function*() {
 
 const IntegerLiteral = Digit.many().token();
 
-const AssignmentRHS = or(function*() {
+const Expression = or(function*() {
     yield Identifier;
     yield IntegerLiteral;
 });
 
 const Assignment = sequence(function*() {
-    const name = yield Identifier;
+    const lhs = yield Identifier;
 
     yield Parse.Char('=', 'Equals Sign');
 
-    const value = yield AssignmentRHS;
+    const rhs = yield Expression;
 
-    return { type: 'assignment', name, value } as any;
+    return { type: 'assignment', lhs, rhs } as any;
 });
 
 const Identifier = sequence(function*() {
@@ -35,7 +36,7 @@ const Identifier = sequence(function*() {
 }).token();
 
 function testInput(inputString: string) {
-    const result = Assignment(new Input(inputString));
+    const result = SelectStatement(new Input(inputString));
 
     if (result.wasSuccessful) {
         console.log("Result: ", JSON.stringify(result.value, null, '  '));
@@ -44,11 +45,12 @@ function testInput(inputString: string) {
     }
 }
 
+testInput("SELECT foo, bar, baz FROM myTable WHERE a = b");
 // testInput("ab");
 // testInput("a");
 // testInput("3");
 // testInput("d5");
 // testInput("-");
 testInput(" df =    dsfs   ");
-// testInput("d=w");
+testInput("d");
 // testInput("d==");
