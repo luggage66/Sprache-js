@@ -11,7 +11,8 @@
         "quotemark": false,
         "arrow-parens": false,
         "interface-name": false,
-        "trailing-comma": false
+        "trailing-comma": false,
+        "no-unnecessary-initializer": false
     },
     "rulesDirectory": []
 }

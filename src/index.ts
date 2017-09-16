@@ -53,7 +53,7 @@ class Result<T> {
     }
 
     message?: string;
-    remainder?: IInput;
+    remainder: IInput;
     expectations?: string[];
     value?: T;
 
@@ -83,16 +83,6 @@ class FailureResult<T> extends Result<T> {
     }
 }
 
-// function Success<T>(value: T, remainder: IInput): ISuccessResult<T>  {
-//     return {
-//         successful: true,
-//         value,
-//         remainder,
-//         message: undefined,
-//         expectations: undefined
-//     };
-// }
-
 function DetermineBestError(firstFailure: FailureResult<any>, secondFailure: FailureResult<any>) {
     if (secondFailure.remainder.position > firstFailure.remainder.position) {
         return secondFailure;
@@ -109,87 +99,138 @@ function DetermineBestError(firstFailure: FailureResult<any>, secondFailure: Fai
     return firstFailure;
 }
 
-// interface Parser<T> {
-//     (input: IInput): IResult<T>;
-// }
+function sequence<T, U>(generator: () => Iterator<Parser<T>>): Parser<any> {
+    return (input: IInput) => {
 
-class Parser<T> {
-    constructor(private fn: (input: IInput) => Result<T>) {
-    }
+        const iterator = generator();
 
-    parse(input: IInput) {
-        return this.fn(input);
-    }
+        // Loop state
+        let result: Result<T>;
+        let nextParser: Parser<T>;
+        let done = false;
 
-    then<U>(second: (_: T) => Parser<U>): Parser<U> {
-        if (!second) {
-            throw new Error("no second parser in Then()");
+        do {
+            const foo = { iterator, result: result! };
+
+            // console.log(nextParser!, done, result);
+
+            ({ value: nextParser, done } = nextSequenceStep({ iterator, result: result! }));
+
+            // console.log(nextParser!, done, result);
+
+            if (!done) {
+                result = nextParser(input);
+            }
+            input = result!.remainder;
+        } while (!done);
+
+        console.log(result);
+
+        if (result!.wasSuccessful) {
+            return Result.Success(nextParser, input);
         }
 
-        return new Parser((i) => {
-            return this.parse(i).ifSuccess(s => second(s.value).parse(s.remainder));
-        });
-    }
+        return result!;
+    };
+}
 
-    select<U>(convert: (_: T) => U) {
-        if (!convert) {
-            throw new Error("no map function provided to select()");
+function nextSequenceStep<T>({ iterator, result }: { iterator: Iterator<Parser<T>>, result: Result<T>}) {
+    if (result && !result.wasSuccessful) {
+        return iterator.return!("ERROR 43!!!");
+    } else {
+        return iterator.next(result ? result.value! : undefined);
+    }
+}
+
+function or<T, U>(generator: () => Iterator<Parser<T>>): Parser<any> {
+    return (input: IInput) => {
+
+        const iterator = generator();
+
+        // Loop state
+        let result: Result<T>;
+        let nextParser: Parser<T>;
+        let done = false;
+
+        do {
+            const foo = { iterator, result: result! };
+
+            // console.log(nextParser!, done, result);
+
+            ({ value: nextParser, done } = nextOrStep({ iterator, result: result! }));
+
+            // console.log(nextParser!, done, result);
+
+            if (!done) {
+                result = nextParser(input);
+            }
+            input = result!.remainder;
+        } while (!done);
+
+        if (result!.wasSuccessful) {
+            return Result.Success(nextParser, input);
         }
 
-        return this.then(t => Parse.return(convert(t)));
+        return result!;
+    };
+}
+
+function nextOrStep<T>({ iterator, result }: { iterator: Iterator<Parser<T>>, result: Result<T>}) {
+    if (result && result.wasSuccessful) {
+        return iterator.return!(result.value);
+    } else {
+        return iterator.next(result ? result.value! : undefined);
     }
+}
+
+type Parser<T> = (input: IInput) => Result<T>;
+
+function Char(charOrPredicate: string | Predicate<string>, description: string): Parser<string> {
+    if (!charOrPredicate) { throw new Error("charOrPredicate missing"); }
+    if (!description) { throw new Error("description missing"); }
+
+    let predicate: Predicate<string>;
+
+    // if they give us a character, turn that into a predicate
+    if (typeof(charOrPredicate) !== 'function') {
+        const char = charOrPredicate;
+        predicate = (c) => c === char;
+    } else {
+        predicate = charOrPredicate;
+    }
+
+    return i => {
+        if (!i.atEnd) {
+            if (predicate(i.current)) {
+
+                return Result.Success(i.current, i.advance());
+            }
+
+            return Result.Failure<string>(i, `Unexpected ${i.current}`, [ description ]);
+        }
+
+        return Result.Failure<string>(i, "Unexpected end of input reached", [ description ]);
+    };
 }
 
 type Predicate<T> = (input: T) => boolean;
 
-const Parse = {
-    return<T>(value: T) {
-        return new Parser(i => Result.Success(value, i));
-    },
+const LetterToken = Char(c => /[a-zA-Z]/.test(c), "A letter");
+const NumberToken = Char(c => /[0-9]/.test(c), "A number");
 
-    char(charOrPredicate: string | Predicate<string>, description: string) {
-        if (!charOrPredicate) { throw new Error("charOrPredicate missing"); }
-        if (!description) { throw new Error("description missing"); }
+const Grammar = sequence(function*() {
+    const letter = yield LetterToken;
+    yield Char('=', 'Equals Sign');
+    const numberOrLetter = yield or(function*() {
+        yield NumberToken;
+        yield LetterToken;
+    });
 
-        let predicate: Predicate<string>;
-
-        // if they give us a character, turn that into a predicate
-        if (typeof(charOrPredicate) !== 'function') {
-            const char = charOrPredicate;
-            predicate = (c) => c === char;
-        } else {
-            predicate = charOrPredicate;
-        }
-
-        return new Parser(i => {
-            if (!i.atEnd) {
-                if (predicate(i.current)) {
-
-                    return Result.Success(i.current, i.advance());
-                }
-
-                return Result.Failure<string>(i, `Unexpected ${i.current}`, [ description ]);
-            }
-
-            return Result.Failure<string>(i, "Unexpected end of input reached", [ description ]);
-        });
-    },
-
-    charExcept(charPredicate: Predicate<string>, description: string) {
-        return Parse.char(c => !charPredicate(c), `any character except ${description}`);
-    }
-};
-
-let myGrammar =
-    Parse.char(c => /[a-zA-Z]/.test(c), 'A letter')
-        .then(c1 =>
-            Parse.char(c => /[0-9]/.test(c), 'A number')
-            .then(c2 => Parse.return({ [c1]: c2 })
-            )
-        );
+    return { letter, numberOrLetter } as any;
+});
 
 function testInput(inputString: string) {
-    const result = myGrammar.parse(new Input(inputString));
+    const result = Grammar(new Input(inputString));
 
     if (result.wasSuccessful) {
         console.log("Result: ", JSON.stringify(result.value, null, '  '));
@@ -198,7 +239,11 @@ function testInput(inputString: string) {
     }
 }
 
-testInput("ab");
-testInput("a");
-testInput("3");
-testInput("d5");
+// testInput("ab");
+// testInput("a");
+// testInput("3");
+// testInput("d5");
+// testInput("-");
+testInput("d=5");
+testInput("d=w");
+testInput("d==");
