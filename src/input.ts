@@ -7,6 +7,7 @@ export interface IInput {
     column: number;
 
     advance(): IInput;
+    isEqual(otherInput: Input): boolean;
 }
 
 export class Input implements IInput {

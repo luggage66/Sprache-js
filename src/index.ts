@@ -17,6 +17,76 @@ function DetermineBestError(firstFailure: FailureResult<any>, secondFailure: Fai
     return firstFailure;
 }
 
+function ParseChar(charOrPredicate: string | Predicate<string>, description: string): Parser<string> {
+    if (!charOrPredicate) { throw new Error("charOrPredicate missing"); }
+    if (!description) { throw new Error("description missing"); }
+
+    let predicate: Predicate<string>;
+
+    // if they give us a character, turn that into a predicate
+    if (typeof(charOrPredicate) !== 'function') {
+        const char = charOrPredicate;
+        predicate = (c) => c === char;
+    } else {
+        predicate = charOrPredicate;
+    }
+
+    return i => {
+        if (!i.atEnd) {
+            if (predicate(i.current)) {
+
+                return Result.Success(i.current, i.advance());
+            }
+
+            return Result.Failure<string>(i, `Unexpected ${i.current}`, [ description ]);
+        }
+
+        return Result.Failure<string>(i, "Unexpected end of input reached", [ description ]);
+    };
+}
+
+const Parse = {
+
+    Char: ParseChar,
+    WhiteSpace: ParseChar(c => / /.test(c), "whitespace"),
+
+    many<T>(parser: Parser<T>): Parser<T[]> {
+        if (!parser) {
+            throw new Error("parser missing");
+        }
+
+        return i => {
+            let remainder = i;
+            const result: T[] = [];
+            let r = parser(i);
+
+            while (r.wasSuccessful) {
+                if (remainder.isEqual(r.remainder)) {
+                    break;
+                }
+
+                result.push(r.value!);
+                remainder = r.remainder;
+                r = parser(remainder);
+            }
+
+            return Result.Success(result, remainder);
+        };
+    },
+
+    token<T>(parser: Parser<T>): Parser<T> {
+        return sequence(function*() {
+            yield Parse.many(Parse.WhiteSpace);
+
+            const item = yield parser;
+
+            yield Parse.many(Parse.WhiteSpace);
+
+            return item;
+        });
+    }
+};
+
 function sequence<T, U>(generator: () => Iterator<Parser<T>>): Parser<any> {
     return (input: IInput) => {
 
@@ -28,7 +98,6 @@ function sequence<T, U>(generator: () => Iterator<Parser<T>>): Parser<any> {
         let done = false;
 
         do {
-            const foo = { iterator, result: result! };
 
             ({ value: nextParser, done } = nextSequenceStep({ iterator, result: result! }));
 
@@ -37,8 +106,6 @@ function sequence<T, U>(generator: () => Iterator<Parser<T>>): Parser<any> {
             }
             input = result!.remainder;
         } while (!done);
-
-        console.log(result);
 
         if (result!.wasSuccessful) {
             return Result.Success(nextParser, input);
@@ -94,53 +161,42 @@ function nextOrStep<T>({ iterator, result }: { iterator: Iterator<Parser<T>>, re
 }
 
 type Parser<T> = (input: IInput) => Result<T>;
-
-function Char(charOrPredicate: string | Predicate<string>, description: string): Parser<string> {
-    if (!charOrPredicate) { throw new Error("charOrPredicate missing"); }
-    if (!description) { throw new Error("description missing"); }
-
-    let predicate: Predicate<string>;
-
-    // if they give us a character, turn that into a predicate
-    if (typeof(charOrPredicate) !== 'function') {
-        const char = charOrPredicate;
-        predicate = (c) => c === char;
-    } else {
-        predicate = charOrPredicate;
-    }
-
-    return i => {
-        if (!i.atEnd) {
-            if (predicate(i.current)) {
-
-                return Result.Success(i.current, i.advance());
-            }
-
-            return Result.Failure<string>(i, `Unexpected ${i.current}`, [ description ]);
-        }
-
-        return Result.Failure<string>(i, "Unexpected end of input reached", [ description ]);
-    };
-}
-
 type Predicate<T> = (input: T) => boolean;
 
-const LetterToken = Char(c => /[a-zA-Z]/.test(c), "A letter");
-const NumberToken = Char(c => /[0-9]/.test(c), "A number");
+const Letter = Parse.Char(c => /[a-zA-Z]/.test(c), "A letter");
+const Digit = Parse.Char(c => /[0-9]/.test(c), "A number");
 
-const Grammar = sequence(function*() {
-    const letter = yield LetterToken;
-    yield Char('=', 'Equals Sign');
-    const numberOrLetter = yield or(function*() {
-        yield NumberToken;
-        yield LetterToken;
-    });
-
-    return { letter, numberOrLetter } as any;
+const DigitOrLetter = or(function*() {
+    yield Digit;
+    yield Letter;
 });
 
+const IntegerLiteral = Parse.token(Parse.many(Digit));
+
+const AssignmentRHS = or(function*() {
+    yield Identifier;
+    yield IntegerLiteral;
+});
+
+const Assignment = sequence(function*() {
+    const name = yield Identifier;
+
+    yield Parse.Char('=', 'Equals Sign');
+
+    const value = yield AssignmentRHS;
+
+    return { type: 'assignment', name, value } as any;
+});
+
+const Identifier = Parse.token(sequence(function*() {
+    const letter = yield Letter;
+    const rest = yield Parse.many(DigitOrLetter);
+
+    return [letter].concat(rest).join('') as any;
+}));
+
 function testInput(inputString: string) {
-    const result = Grammar(new Input(inputString));
+    const result = Assignment(new Input(inputString));
 
     if (result.wasSuccessful) {
         console.log("Result: ", JSON.stringify(result.value, null, '  '));
@@ -154,6 +210,6 @@ function testInput(inputString: string) {
 // testInput("3");
 // testInput("d5");
 // testInput("-");
-testInput("d=5");
-testInput("d=w");
-testInput("d==");
+testInput(" df =    2342   ");
+// testInput("d=w");
+// testInput("d==");
