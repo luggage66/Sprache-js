@@ -12,7 +12,8 @@
         "arrow-parens": false,
         "interface-name": false,
         "trailing-comma": false,
-        "no-unnecessary-initializer": false
+        "no-unnecessary-initializer": false,
+        "ordered-imports": false
     },
     "rulesDirectory": []
 }
