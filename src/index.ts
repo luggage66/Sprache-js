@@ -1,24 +1,24 @@
 import { Result, FailureResult, SuccessResult } from './result';
 import { IInput, Input } from './input';
-import { Parse, or, sequence } from './engine';
+import { Parse } from './parse';
 import { SelectStatement } from './grammars/sql';
 
 const Letter = Parse.Char(c => /[a-zA-Z]/.test(c), "A letter");
 const Digit = Parse.Char(c => /[0-9]/.test(c), "A number");
 
-const DigitOrLetter = or(function*() {
+const DigitOrLetter = Parse.queryOr(function*() {
     yield Digit;
     yield Letter;
 });
 
 const IntegerLiteral = Digit.many().token();
 
-const Expression = or(function*() {
+const Expression = Parse.queryOr(function*() {
     yield Identifier;
     yield IntegerLiteral;
 });
 
-const Assignment = sequence(function*() {
+const Assignment = Parse.query(function*() {
     const lhs = yield Identifier;
 
     yield Parse.Char('=', 'Equals Sign');
@@ -28,7 +28,7 @@ const Assignment = sequence(function*() {
     return Parse.return({ type: 'assignment', lhs, rhs });
 });
 
-const Identifier = sequence(function*() {
+const Identifier = Parse.query(function*() {
     const letter = yield Letter;
     const rest = yield DigitOrLetter.many();
 

@@ -1,16 +1,16 @@
 import { Result } from '../result';
-import { Parse, Parser, sequence, or, ParserHelpers } from '../engine';
+import { Parse, Parser, ParserHelpers } from '../parse';
 import { IInput } from '../input';
 
 const Letter = Parse.Char(c => /[a-zA-Z]/.test(c), "A letter");
 const Digit = Parse.Char(c => /[0-9]/.test(c), "A number");
 
-const DigitOrLetter = or<string>(function*() {
+const DigitOrLetter = Parse.queryOr<string>(function*() {
     yield Digit;
     yield Letter;
 });
 
-const LiteralToken = (word: string) => sequence(function*() {
+const LiteralToken = (word: string) => Parse.query(function*() {
     for (const letter of word) {
         yield Parse.Char(letter, letter);
     }
@@ -18,9 +18,9 @@ const LiteralToken = (word: string) => sequence(function*() {
     return Parse.return(word);
 });
 
-const SeparatedList = (separator: string, parser: Parser<any>) => sequence(function*() {
+const SeparatedList = (separator: string, parser: Parser<any>) => Parse.query(function*() {
     const firstItem = yield parser;
-    const rest = yield sequence(function*() {
+    const rest = yield Parse.query(function*() {
         yield Parse.Char(separator, separator);
         const item = yield parser;
 
@@ -30,14 +30,14 @@ const SeparatedList = (separator: string, parser: Parser<any>) => sequence(funct
     return Parse.return([firstItem].concat(rest));
 });
 
-const Identifier = sequence(function*() {
+const Identifier = Parse.query(function*() {
     const letter = yield Letter;
     const rest = yield DigitOrLetter.many();
 
     return Parse.return([letter].concat(rest).join('')) as any;
 }).token();
 
-const Comparison = sequence(function*() {
+const Comparison = Parse.query(function*() {
     const lhs = yield Identifier;
 
     yield Parse.Char('=', 'Equals Sign');
@@ -51,7 +51,7 @@ const Comparison = sequence(function*() {
     });
 });
 
-const SelectClause = sequence(function*() {
+const SelectClause = Parse.query(function*() {
     yield LiteralToken("SELECT");
 
     const columns = yield SeparatedList(',', Identifier);
@@ -62,7 +62,7 @@ const SelectClause = sequence(function*() {
     });
 });
 
-const FromClause = sequence(function*() {
+const FromClause = Parse.query(function*() {
     yield LiteralToken("FROM");
 
     const tableName = yield Identifier;
@@ -73,7 +73,7 @@ const FromClause = sequence(function*() {
     });
 });
 
-const WhereClause = sequence(function*() {
+const WhereClause = Parse.query(function*() {
     yield LiteralToken("WHERE");
 
     const conditions = yield Comparison.many();
@@ -87,7 +87,7 @@ const WhereClause = sequence(function*() {
 interface SelectStatement {
     statement: string;
 }
-const SelectStatement = sequence(function*() {
+const SelectStatement = Parse.query(function*() {
     const select = yield SelectClause;
     const from = yield FromClause;
     const where = yield WhereClause;

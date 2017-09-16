@@ -66,7 +66,7 @@ const helpers: ParserHelpers = {
     },
     token<T>(this: Parser<T>): Parser<T> {
         const parser = this;
-        return sequence(function*() {
+        return Parse.query(function*() {
             yield Parse.WhiteSpace.many();
 
             const item = yield parser;
@@ -117,38 +117,65 @@ const Parse = {
     WhiteSpace: ParseChar(c => / /.test(c), "whitespace"),
     return<T>(value: T): Parser<T> {
         return MakeParser(i => Result.Success(value, i));
+    },
+
+    query<T, U>(generator: () => IterableIterator<Parser<T>>): Parser<U> {
+        return MakeParser((input: IInput) => {
+
+            const iterator = generator();
+
+            // Loop state
+            let result: Result<U | T>;
+            let nextParser: Parser<T>;
+            let done = false;
+
+            do {
+                const nextStep = nextSequenceStep({ iterator, result: result! as Result<T> });
+
+                nextParser = nextStep.value as Parser<T>; // You yield Parser<T>'s and return U's
+                done = nextStep.done;
+
+                result = nextParser(input);
+                input = result!.remainder;
+            } while (!done);
+
+            return result! as Result<U>;
+        });
+    },
+
+    queryOr<U>(generator: () => IterableIterator<Parser<any>>): Parser<U> {
+        return MakeParser((input: IInput) => {
+
+            const iterator = generator();
+
+            // Loop state
+            let result: Result<any>;
+            let nextParser: Parser<any>;
+            let done = false;
+
+            do {
+                const foo = { iterator, result: result! };
+
+                ({ value: nextParser, done } = nextOrStep({ iterator, result: result! }));
+
+                if (!done) {
+                    result = nextParser(input);
+                }
+                input = result!.remainder;
+            } while (!done);
+
+            if (result!.wasSuccessful) {
+                return Result.Success(nextParser as Parser<U>, input);
+            }
+
+            if (!result!) {
+                throw Error("Error empty-or?");
+            }
+
+            return result! as any;
+        });
     }
 };
-
-interface MyIterator<T, U> {
-    next(value?: T): IteratorResult<T>;
-    return?(value?: T): IteratorResult<T>;
-    throw?(e?: any): IteratorResult<T>;
-}
-
-export function sequence<T, U>(generator: () => IterableIterator<Parser<T>>): Parser<U> {
-    return MakeParser((input: IInput) => {
-
-        const iterator = generator();
-
-        // Loop state
-        let result: Result<U | T>;
-        let nextParser: Parser<T>;
-        let done = false;
-
-        do {
-            const nextStep = nextSequenceStep({ iterator, result: result! as Result<T> });
-
-            nextParser = nextStep.value as Parser<T>; // You yield Parser<T>'s and return U's
-            done = nextStep.done;
-
-            result = nextParser(input);
-            input = result!.remainder;
-        } while (!done);
-
-        return result! as Result<U>;
-    });
-}
 
 function nextSequenceStep<T>({ iterator, result }: { iterator: IterableIterator<Parser<T>>, result: Result<T>}) {
     if (result && !result.wasSuccessful) {
@@ -156,39 +183,6 @@ function nextSequenceStep<T>({ iterator, result }: { iterator: IterableIterator<
     } else {
         return iterator.next(result ? result.value! : undefined);
     }
-}
-
-export function or<U>(generator: () => IterableIterator<Parser<any>>): Parser<U> {
-    return MakeParser((input: IInput) => {
-
-        const iterator = generator();
-
-        // Loop state
-        let result: Result<any>;
-        let nextParser: Parser<any>;
-        let done = false;
-
-        do {
-            const foo = { iterator, result: result! };
-
-            ({ value: nextParser, done } = nextOrStep({ iterator, result: result! }));
-
-            if (!done) {
-                result = nextParser(input);
-            }
-            input = result!.remainder;
-        } while (!done);
-
-        if (result!.wasSuccessful) {
-            return Result.Success(nextParser as Parser<U>, input);
-        }
-
-        if (!result!) {
-            throw Error("Error empty-or?");
-        }
-
-        return result! as any;
-    });
 }
 
 function nextOrStep<T>({ iterator, result }: { iterator: IterableIterator<Parser<T>>, result: Result<T>}) {
