@@ -5,12 +5,15 @@ export interface IInput {
     position: number;
     line: number;
     column: number;
+    memos: Map<any, any>;
 
     advance(): IInput;
     isEqual(otherInput: Input): boolean;
 }
 
 export class Input implements IInput {
+    memos: Map<any, any> = new Map<any, any>();
+
     constructor(
         public source: string,
         public position: number = 0,

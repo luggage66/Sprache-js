@@ -27,10 +27,10 @@ export class Result<T> {
         return Result.Failure(remainder, message, expectations);
     }
 
-    ifFailure<U>(next: (foo: Result<any>) => Result<any>): Result<U> {
+    ifFailure<U>(next: (foo: FailureResult<U>) => Result<any>): Result<U> {
         const result = this;
 
-        return (result.wasSuccessful ? result : next(result)) as Result<U>;
+        return (result.wasSuccessful ? result : next(result as FailureResult<any>)) as Result<U>;
     }
 }
 

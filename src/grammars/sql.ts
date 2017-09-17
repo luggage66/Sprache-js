@@ -10,13 +10,6 @@ const DigitOrLetter = Parse.queryOr<string>(function*() {
     yield Letter;
 });
 
-const LiteralToken = (word: string) => Parse.query(function*() {
-    for (const letter of word) {
-        yield Parse.char(letter, letter);
-    }
-
-    return Parse.return(word);
-});
 
 const SeparatedList = (separator: string, parser: Parser<any>) => Parse.query(function*() {
     const firstItem = yield parser;
@@ -52,7 +45,7 @@ const Comparison = Parse.query(function*() {
 });
 
 const SelectClause = Parse.query(function*() {
-    yield LiteralToken("SELECT");
+    yield Parse.string("SELECT");
 
     const columns = yield SeparatedList(',', Identifier);
 
@@ -63,7 +56,7 @@ const SelectClause = Parse.query(function*() {
 });
 
 const FromClause = Parse.query(function*() {
-    yield LiteralToken("FROM");
+    yield Parse.string("FROM");
 
     const tableName = yield Identifier;
 
@@ -74,14 +67,14 @@ const FromClause = Parse.query(function*() {
 });
 
 const WhereClause = Parse.query(function*() {
-    yield LiteralToken("WHERE");
+    yield Parse.string("WHERE");
 
     const conditions = yield Comparison.many();
 
     return Parse.return({
         $type: 'WHERE_CLAUSE',
         conditions
-    });
+    }) as any;
 });
 
 interface SelectStatement {

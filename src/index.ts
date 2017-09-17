@@ -55,14 +55,14 @@ function testInput(inputString: string) {
 // testInput("d");
 // testInput("d==");
 
-const identifier: Parser<string> = Parse.query(function*() {
+const identifier: Parser<string> = Parse.query<any, string>(function*() {
     const leading = yield Parse.whiteSpace.many();
     const first = yield Parse.letter.once();
     const rest = yield Parse.letterOrDigit.many();
     const trailing = yield Parse.whiteSpace.many();
     return Parse.return([first].concat(rest).join('')) as any;
-});
+}).named("Identifier");
 
-const id = identifier.tryParse(" abc123  ");
+const id = identifier.tryParse(" 1abc123  ");
 
-console.log(id);
+console.log(JSON.stringify(id, null, '  '));

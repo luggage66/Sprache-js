@@ -14,7 +14,8 @@
         "trailing-comma": false,
         "no-unnecessary-initializer": false,
         "ordered-imports": false,
-        "object-literal-sort-keys": false
+        "object-literal-sort-keys": false,
+        "max-line-length": [true, 160]
     },
     "rulesDirectory": []
 }
