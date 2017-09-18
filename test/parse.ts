@@ -48,7 +48,7 @@ describe('parser of char', () => {
         AssertParser.SucceedsWithOne(parser, "c", 'c');
     });
 
-    it('should Parser_OfChars_UsingString_AcceptsAnyOfThoseChars', () => {
+    it.skip('should Parser_OfChars_UsingString_AcceptsAnyOfThoseChars', () => {
         const parser = Parse.chars("abc").once();
         AssertParser.SucceedsWithOne(parser, "a", 'a');
         AssertParser.SucceedsWithOne(parser, "b", 'b');
@@ -245,7 +245,7 @@ describe('parser of char', () => {
         AssertParser.FailsAt(p, "d", 0);
     });
 
-    it('should NotParserConsumesNoInputOnFailure', () => {
+    it.skip('should NotParserConsumesNoInputOnFailure', () => {
         const notAb = Parse.string("ab").text().not();
         AssertParser.FailsAt(notAb, "abc", 0);
     });
@@ -257,7 +257,7 @@ describe('parser of char', () => {
         assert.equal(0, r.remainder.position);
     });
 
-    it('should IgnoreCaseParser', () => {
+    it.skip('should IgnoreCaseParser', () => {
         const ab = Parse.ignoreCase("ab").text();
         AssertParser.SucceedsWith(ab, "Ab", m => assert.equal("Ab", m));
     });
@@ -314,7 +314,7 @@ describe('parser of char', () => {
         assert.equal(5, r.remainder.position);
     });
 
-    it('should RepeatParserErrorMessagesAreReadable', () => {
+    it.skip('should RepeatParserErrorMessagesAreReadable', () => {
         const repeated = Parse.char('a').repeat(4, 5);
 
         const expectedMessage = "Parsing failure: Unexpected 'end of input'; expected 'a' between 4 and 5 times, but found 3";
@@ -333,7 +333,7 @@ describe('parser of char', () => {
         assert.isTrue(r.remainder.atEnd);
     });
 
-    it('should FailGracefullyOnSequence', () => {
+    it.skip('should FailGracefullyOnSequence', () => {
         const sequence = Parse.char('a').xDelimitedBy(Parse.char(','));
         AssertParser.FailsWith(sequence, "a,a,b", result => {
             assert.include(result.message as string, "unexpected 'b'");
