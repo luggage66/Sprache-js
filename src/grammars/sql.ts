@@ -10,7 +10,6 @@ const DigitOrLetter = Parse.queryOr<string>(function*() {
     yield Letter;
 });
 
-
 const SeparatedList = (separator: string, parser: Parser<any>) => Parse.query(function*() {
     const firstItem = yield parser;
     const rest = yield Parse.query(function*() {
@@ -63,7 +62,7 @@ const FromClause = Parse.query(function*() {
     return Parse.return({
         $type: 'FROM_CLAUSE',
         tableName
-    });
+    }) as any;
 });
 
 const WhereClause = Parse.query(function*() {

@@ -63,6 +63,6 @@ const identifier: Parser<string> = Parse.query<any, string>(function*() {
     return Parse.return([first].concat(rest).join('')) as any;
 }).named("Identifier");
 
-const id = identifier.tryParse(" 1abc123  ");
+const id = identifier.tryParse(" abc123  ");
 
 console.log(JSON.stringify(id, null, '  '));

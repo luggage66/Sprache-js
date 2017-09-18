@@ -23,7 +23,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/dist/index.js",
+            "program": "${workspaceRoot}/dist/src/index.js",
             "internalConsoleOptions":"openOnSessionStart"
         }
     ]
