@@ -3,6 +3,8 @@
 
 yieldAST is a TypeScript port of [Sprache](https://github.com/sprache/Sprache), a simple parser for C#
 
+[![Build Status](https://travis-ci.org/luggage66/yieldAST.svg?branch=master)](https://travis-ci.org/luggage66/yieldAST/branches) [![Coverage Status](https://coveralls.io/repos/github/luggage66/yieldAST/badge.svg?branch=master)](https://coveralls.io/github/luggage66/yieldAST?branch=master) 
+
 I project is still in early development.
 
 ### Usage
