@@ -1,6 +1,7 @@
 MIT License
 
-Copyright (c) 2017 Donald Mull Jr.
+Copyright (c) 2011 Nicholas Blumhardt (Original C# code)
+Copyright (c) 2017 Donald Mull Jr. (TypeScript port)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
