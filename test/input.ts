@@ -1,5 +1,5 @@
 import 'mocha';
-import { Parse, Parser, Input, IInput, Result } from 'yieldAST';
+import { Parse, Parser, Input, IInput, Result } from 'sprache';
 import { expect, assert } from 'chai';
 import { AssertParser } from './assertParser';
 import { AssertInput } from './assertInput';

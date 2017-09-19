@@ -1,5 +1,5 @@
 import 'mocha';
-import { Parse, Parser } from 'yieldAST';
+import { Parse, Parser } from 'sprache';
 import { expect } from 'chai';
 
 describe('Hello World', () => {

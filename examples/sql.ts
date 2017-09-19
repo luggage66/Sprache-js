@@ -1,4 +1,4 @@
-import { Parse, Parser, Result } from 'yieldAST';
+import { Parse, Parser, Result } from 'sprache';
 
 const Letter = Parse.char(c => /[a-zA-Z]/.test(c), "A letter");
 const Digit = Parse.char(c => /[0-9]/.test(c), "A number");

@@ -1,4 +1,4 @@
-import { Parse } from 'yieldAST';
+import { Parse } from 'sprache';
 
 const IntegerLiteral = Parse.digit.atLeastOnce().text().select(str => Number(str));
 
