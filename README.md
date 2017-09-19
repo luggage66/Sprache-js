@@ -22,16 +22,17 @@ import { Parse } from 'sprache';
 var parseA = Parse.char('A').atLeastOnce();
 ```
 
-Sprache provides a number of built-in functions that can make bigger parsers from smaller ones, often callable via Linq query comprehensions:
+Sprache provides a number of built-in functions that can make bigger parsers from smaller ones, often callable via generators:
 
 ```js
 import { Parse } from 'sprache';
 
 const identifier = Parse.query(function*() {
-    const leading = yield Parse.whiteSpace.many();
-    const first = yield Parse.letter.once();
-    const rest = yield Parse.letterOrDigit.many();
+    const leading  = yield Parse.whiteSpace.many();
+    const first    = yield Parse.letter.once();
+    const rest     = yield Parse.letterOrDigit.many();
     const trailing = yield Parse.whiteSpace.many();
+
     return Parse.return([first].concat(rest).join(''));
 });
 
@@ -40,17 +41,22 @@ var id = identifier.parse(" abc123  ");
 Assert.isEqual("abc123", id);
 ```
 
-## Contributing
+## More Examples
+
+More examples are available in [examples/](https://github.com/luggage66/Sprache-js/tree/master/examples)
+
+## Building / Running examples
 
 ```sh
 npm install
-npm run build # or: ./node_modules/.bin/tsc
+npm run build
+npm run test
 ```
 
-To run
+To run as example
 
 ```sh
-npm start # or: node dist/index
+npm run build && node dist/examples/sql
 ```
 
 Is VSCode, just run task "npm: install", then F5 to run.
