@@ -393,8 +393,9 @@ const Parse = {
     whiteSpace: ParseChar(c => / /.test(c), "whitespace"),
     letter: ParseChar(c => /[a-zA-Z]/.test(c), "a letter"),
     letterOrDigit: ParseChar(c => /[a-zA-Z0-9]/.test(c), "a letter or digit"),
+    digit: ParseChar(c => /[0-9]/.test(c), "a digit"),
     anyChar: ParseChar(() => true, 'any character'),
-    ignoreCase: (word: string) => Parse.query<any, string[]>(function*() {
+    ignoreCase: (word: string) => Parse.query<string[]>(function*() {
         const foundChars = [];
 
         for (const letter of word) {
@@ -403,7 +404,7 @@ const Parse = {
 
         return Parse.return(foundChars);
     }),
-    string: (word: string) => Parse.query<any, string[]>(function*() {
+    string: (word: string) => Parse.query<string[]>(function*() {
         const foundChars = [];
 
         for (const letter of word) {
@@ -416,20 +417,20 @@ const Parse = {
         return MakeParser(i => Result.Success(value, i));
     },
 
-    query<T, U>(generator: () => IterableIterator<Parser<T>>, message?: string): Parser<U> {
+    query<U>(generator: () => IterableIterator<Parser<any>>, message?: string): Parser<U> {
         return MakeParser((input: IInput) => {
 
             const iterator = generator();
 
             // Loop state
-            let result: Result<U | T>;
-            let nextParser: Parser<T>;
+            let result: Result<any>;
+            let nextParser: Parser<any>;
             let done = false;
 
             do {
-                const nextStep = nextSequenceStep({ iterator, result: result! as Result<T> });
+                const nextStep = nextSequenceStep({ iterator, result: result!});
 
-                nextParser = nextStep.value as Parser<T>; // You yield Parser<T>'s and return U's
+                nextParser = nextStep.value; // You yield Parser<T>'s and return U's
                 done = nextStep.done;
 
                 result = nextParser(input);
@@ -462,7 +463,7 @@ const Parse = {
             } while (!done);
 
             if (result!.wasSuccessful) {
-                return Result.Success(nextParser as Parser<U>, input);
+                return Result.Success(nextParser as Parser<any>, input);
             }
 
             if (!result!) {

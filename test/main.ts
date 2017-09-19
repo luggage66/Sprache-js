@@ -1,5 +1,5 @@
 import 'mocha';
-import { Parse, Parser } from '../src/parse';
+import { Parse, Parser } from 'yieldAST';
 import { expect } from 'chai';
 
 describe('Hello World', () => {
@@ -9,7 +9,7 @@ describe('Hello World', () => {
             const first = yield Parse.letter.once();
             const rest = yield Parse.letterOrDigit.many();
             const trailing = yield Parse.whiteSpace.many();
-            return Parse.return([first].concat(rest).join('')) as any;
+            return Parse.return([first].concat(rest).join(''));
         });
 
         const id = identifier.parse(" abc123  ");

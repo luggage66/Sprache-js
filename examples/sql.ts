@@ -1,6 +1,4 @@
-import { Result } from '../result';
-import { Parse, Parser, ParserHelpers } from '../parse';
-import { IInput } from '../input';
+import { Parse, Parser, Result } from 'yieldAST';
 
 const Letter = Parse.char(c => /[a-zA-Z]/.test(c), "A letter");
 const Digit = Parse.char(c => /[0-9]/.test(c), "A number");
@@ -92,4 +90,4 @@ const SelectStatement = Parse.query(function*() {
     });
 });
 
-export {SelectStatement};
+export { SelectStatement };

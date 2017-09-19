@@ -1,23 +1,22 @@
 import 'mocha';
-import { Parse, Parser } from '../src/parse';
-import { Result } from '../src/result';
+import { Parse, Parser, Result } from 'yieldAST';
 import { expect, assert } from 'chai';
 import { AssertParser } from './assertParser';
 
-const ASeq: Parser<string[]> = Parse.query<any, string[]>(function*() {
+const ASeq: Parser<string[]> = Parse.query<string[]>(function*() {
     const first = yield Parse.ref(() => ASeq);
     const comma = yield Parse.char(',');
     const rest = yield Parse.char('a').once();
     return Parse.return(first.concat(rest));
 }).or(Parse.char('a').once());
 
-const ABSeq: Parser<string[]> = Parse.query<any, string[]>(function*() {
+const ABSeq: Parser<string[]> = Parse.query<string[]>(function*() {
     const first = yield Parse.ref(() => BASeq);
     const rest = yield Parse.char('a').once();
     return Parse.return(first.concat(rest));
 }).or(Parse.char('a').once());
 
-const BASeq: Parser<string[]> = Parse.query<any, string[]>(function*() {
+const BASeq: Parser<string[]> = Parse.query<string[]>(function*() {
     const first = yield Parse.ref(() => ABSeq);
     const rest = yield Parse.char('b').once();
     return Parse.return(first.concat(rest));
@@ -93,7 +92,7 @@ describe('parser of char', () => {
     });
 
     it('should CanSpecifyParsersUsingQueryComprehensions', () => {
-        const p = Parse.query<any, string[]>(function*() {
+        const p = Parse.query<string[]>(function*() {
             const a = yield Parse.char('a').once();
             const bs = yield Parse.char('b').many();
             const cs = yield Parse.char('c').atLeastOnce();
