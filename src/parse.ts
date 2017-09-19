@@ -22,8 +22,8 @@ export type ParserFunction<T> = (input: IInput) => Result<T>;
 type Predicate<T> = (input: T) => boolean;
 
 export interface ParserHelpers {
-    tryParse<T>(input: string): Result<T>;
-    parse<T>(input: string): T;
+    tryParse<T>(this: Parser<T>, input: string): Result<T>;
+    parse<T>(this: Parser<T>, input: string): T;
 }
 
 export interface ParserApi {
