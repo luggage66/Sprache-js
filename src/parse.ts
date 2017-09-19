@@ -372,7 +372,7 @@ function ParseChar(charOrPredicate: string | Predicate<string>, description?: st
                 return Result.Success(i.current, i.advance());
             }
 
-            return Result.Failure<string>(i, `Unexpected ${i.current}`, [ description! ]);
+            return Result.Failure<string>(i, `unexpected '${i.current}'`, [ description! ]);
         }
 
         return Result.Failure<string>(i, "Unexpected end of input reached", [ description! ]);
@@ -382,7 +382,13 @@ function ParseChar(charOrPredicate: string | Predicate<string>, description?: st
 const Parse = {
     char: ParseChar,
     chars(...c: string[]) {
-        return ParseChar(c.includes.bind(c), c.join("|"));
+        let listToMatch: string | string[] = c;
+
+        if (c.length === 1 && c[0].length > 1) {
+            listToMatch = c[0];
+        }
+
+        return ParseChar(listToMatch.includes.bind(c), c.join("|"));
     },
     whiteSpace: ParseChar(c => / /.test(c), "whitespace"),
     letter: ParseChar(c => /[a-zA-Z]/.test(c), "a letter"),

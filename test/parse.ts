@@ -48,7 +48,7 @@ describe('parser of char', () => {
         AssertParser.SucceedsWithOne(parser, "c", 'c');
     });
 
-    it.skip('should Parser_OfChars_UsingString_AcceptsAnyOfThoseChars', () => {
+    it('should Parser_OfChars_UsingString_AcceptsAnyOfThoseChars', () => {
         const parser = Parse.chars("abc").once();
         AssertParser.SucceedsWithOne(parser, "a", 'a');
         AssertParser.SucceedsWithOne(parser, "b", 'b');
@@ -333,7 +333,7 @@ describe('parser of char', () => {
         assert.isTrue(r.remainder.atEnd);
     });
 
-    it.skip('should FailGracefullyOnSequence', () => {
+    it('should FailGracefullyOnSequence', () => {
         const sequence = Parse.char('a').xDelimitedBy(Parse.char(','));
         AssertParser.FailsWith(sequence, "a,a,b", result => {
             assert.include(result.message as string, "unexpected 'b'");
