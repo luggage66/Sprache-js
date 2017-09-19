@@ -1,10 +1,9 @@
 import 'mocha';
 import { Parse, Parser } from '../src/parse';
 import { expect } from 'chai';
-// if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 
-describe('Hello function', () => {
-    it('should return hello world', () => {
+describe('Hello World', () => {
+    it('should work', () => {
         const identifier: Parser<string> = Parse.query(function*() {
             const leading = yield Parse.whiteSpace.many();
             const first = yield Parse.letter.once();
