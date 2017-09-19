@@ -1,6 +1,6 @@
 {
   "name": "sprache",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "license": "MIT",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -9,6 +9,14 @@
     "build": "tsc",
     "test": "nyc mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "homepage": "https://github.com/luggage66/Sprache-js",
+  "bugs": {
+    "url": "https://github.com/luggage66/Sprache-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luggage66/Sprache-js.git"
   },
   "nyc": {
     "extension": [
