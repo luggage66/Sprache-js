@@ -45,4 +45,8 @@ export class Input implements IInput {
 
         return new Input(this.source, this.position + distance, newLineNumber, newColumnNumber);
     }
+
+    toString() {
+        return `Line ${this.line}, Column ${this.column}`;
+    }
 }

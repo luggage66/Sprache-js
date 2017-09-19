@@ -72,7 +72,7 @@ const parserFunctions: ParserHelpers & ParserApi = {
         }
 
         // tslint:disable-next-line:max-line-length
-        throw new ParseError(result as FailureResult<T>);
+        throw new ParseError(result.toString());
     },
 
     many<T>(this: Parser<T>): Parser<T[]> {
@@ -388,13 +388,23 @@ const Parse = {
     letter: ParseChar(c => /[a-zA-Z]/.test(c), "a letter"),
     letterOrDigit: ParseChar(c => /[a-zA-Z0-9]/.test(c), "a letter or digit"),
     anyChar: ParseChar(() => true, 'any character'),
-    ignoreCase: (c: string) => ParseChar(ch => c.toLowerCase() === ch.toLowerCase(), c),
-    string: (word: string) => Parse.query<any, string[]>(function*() {
+    ignoreCase: (word: string) => Parse.query<any, string[]>(function*() {
+        const foundChars = [];
+
         for (const letter of word) {
-            yield Parse.char(letter, letter);
+            foundChars.push(yield Parse.char(ch => letter.toLowerCase() === ch.toLowerCase(), letter));
         }
 
-        return Parse.return(word.split(''));
+        return Parse.return(foundChars);
+    }),
+    string: (word: string) => Parse.query<any, string[]>(function*() {
+        const foundChars = [];
+
+        for (const letter of word) {
+            foundChars.push(yield Parse.char(letter, letter));
+        }
+
+        return Parse.return(foundChars);
     }),
     return<T>(value: T): Parser<T> {
         return MakeParser(i => Result.Success(value, i));

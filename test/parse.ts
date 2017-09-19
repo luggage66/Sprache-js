@@ -245,7 +245,7 @@ describe('parser of char', () => {
         AssertParser.FailsAt(p, "d", 0);
     });
 
-    it.skip('should NotParserConsumesNoInputOnFailure', () => {
+    it('should NotParserConsumesNoInputOnFailure', () => {
         const notAb = Parse.string("ab").text().not();
         AssertParser.FailsAt(notAb, "abc", 0);
     });
@@ -257,7 +257,7 @@ describe('parser of char', () => {
         assert.equal(0, r.remainder.position);
     });
 
-    it.skip('should IgnoreCaseParser', () => {
+    it('should IgnoreCaseParser', () => {
         const ab = Parse.ignoreCase("ab").text();
         AssertParser.SucceedsWith(ab, "Ab", m => assert.equal("Ab", m));
     });
@@ -314,7 +314,7 @@ describe('parser of char', () => {
         assert.equal(5, r.remainder.position);
     });
 
-    it.skip('should RepeatParserErrorMessagesAreReadable', () => {
+    it('should RepeatParserErrorMessagesAreReadable', () => {
         const repeated = Parse.char('a').repeat(4, 5);
 
         const expectedMessage = "Parsing failure: Unexpected 'end of input'; expected 'a' between 4 and 5 times, but found 3";

@@ -11,7 +11,7 @@ export class Result<T> {
 
     message?: string;
     remainder: IInput;
-    expectations?: string[];
+    expectations: string[];
     value?: T;
 
     constructor(public wasSuccessful: boolean) {
@@ -32,9 +32,38 @@ export class Result<T> {
 
         return (result.wasSuccessful ? result : next(result as FailureResult<any>)) as Result<U>;
     }
+
+    toString() {
+        if (this.wasSuccessful) {
+            return `Successful parsing of ${this.value}.`;
+        }
+
+        let expMsg = "";
+
+        if (this.expectations.length) {
+            expMsg = " expected " + this.expectations.reduce((e1, e2) => e1 + " or " + e2);
+        }
+
+        const recentlyConsumed = this.calculateRecentlyConsumed();
+
+        return `Parsing failure: ${this.message};${expMsg} (${this.remainder}); recently consumed: ${recentlyConsumed}`;
+    }
+
+    private calculateRecentlyConsumed(): string {
+        const windowSize = 10;
+
+        const totalConsumedChars = this.remainder.position;
+        let windowStart = totalConsumedChars - windowSize;
+        windowStart = windowStart < 0 ? 0 : windowStart;
+
+        const numberOfRecentlyConsumedChars = totalConsumedChars - windowStart;
+
+        return this.remainder.source.substr(windowStart, numberOfRecentlyConsumedChars);
+    }
 }
 
 export class SuccessResult<T> extends Result<T> {
+    expectations: string[] = [];
     constructor(public value: T, public remainder: IInput) {
         super(true);
     }
