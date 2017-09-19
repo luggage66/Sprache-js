@@ -379,6 +379,19 @@ function ParseChar(charOrPredicate: string | Predicate<string>, description?: st
     });
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+function String_prototype_includes(this: string, search: string, start?: number) {
+    if (typeof start !== 'number') {
+        start = 0;
+    }
+
+    if (start + search.length > this.length) {
+        return false;
+    } else {
+        return this.indexOf(search, start) !== -1;
+    }
+}
+
 const Parse = {
     char: ParseChar,
     chars(...c: string[]) {
@@ -388,7 +401,7 @@ const Parse = {
             listToMatch = c[0];
         }
 
-        return ParseChar(listToMatch.includes.bind(c), c.join("|"));
+        return ParseChar((listToMatch.includes || String_prototype_includes).bind(c), c.join("|"));
     },
     whiteSpace: ParseChar(c => / /.test(c), "whitespace"),
     letter: ParseChar(c => /[a-zA-Z]/.test(c), "a letter"),
