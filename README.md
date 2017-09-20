@@ -3,7 +3,7 @@
 
 sprache.js is a TypeScript port of [Sprache](https://github.com/sprache/Sprache), a simple parser for C#
 
-[![Build Status](https://travis-ci.org/luggage66/Sprache-js.svg?branch=master)](https://travis-ci.org/luggage66/Sprache-js/branches) [![Coverage Status](https://coveralls.io/repos/github/luggage66/Sprache-js/badge.svg?branch=master)](https://coveralls.io/github/luggage66/Sprache-js?branch=master) 
+[![Build Status](https://travis-ci.org/luggage66/Sprache-js.svg?branch=master)](https://travis-ci.org/luggage66/Sprache-js/branches) [![Coverage Status](https://coveralls.io/repos/github/luggage66/Sprache-js/badge.svg?branch=master)](https://coveralls.io/github/luggage66/Sprache-js?branch=master)  [![Gitter](https://badges.gitter.im/luggage66/Sprache-js.svg)](https://gitter.im/luggage66/Sprache-js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ```sh
 npm install sprache --save

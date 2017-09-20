@@ -1,5 +1,12 @@
 language: node_js
 node_js:
-  - "4"
-  - "8"
+- '4'
+- '8'
 after_success: npm run coverage
+notifications:
+  webhooks:
+    urls:
+      secure: oQkU0NJIM7TDT7fNLS9T1Z9Su4md4vj5xoi21Gu9iMmmsj8H1GTLfSPoN1r++olRVoUf26qxd7fAiDkAAuIcgT02OlTRm2PBNWYvzY8LYAbWJXfyexclNlGg1T1o92lewZ/bqAKKBlD2NDwieXxatueeiNn74O8aQSL31GRpo4c0ls3O3msfYNA3qk871T0B7jnrJ+ipB4BF5X76EKMwgtfRYV2LC//CAsicvXiabno2XPy7DbdPE+oVEQ4pUANW0MbRN3+yyVt95RNlJMhp32xts2RivJV5VMkQF79s2lg1+0N75joFLfuo9WEuQQmKR5vgUeU2wFdV3Mv/yh3rz06uCwWcqPZ4V/vcfiNjFewLFeBAAufAZO55ckHneuGpJAURClzdWbRgXQcvTAviiih8s57ccmUaegcrC/gtzo8/YkSg8/2VZp79edo9Kh5YJU+v93foqvvQRKWTBteku1JavwJHZL44XKSpKuylay6axY6r/5EMtio5q/WIldDB1faPcMYb6v7tzvzHq9/dDr4UjLyKgPdwxEBJhrYFSAWWed+jQ6XLlYtW23uWrhshYCuuX0o4VpHcNTFyAfGhwIAq7qIm8xdMb0x2NEbmqXtUG69DyZsqFVG0lYkLAN5FkvpWELVtPVdJA8KM9v7iy82+Hs1Hut1lIVZkZk4XWPA=
+    on_success: change
+    on_failure: always
+    on_start: never
