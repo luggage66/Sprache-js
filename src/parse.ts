@@ -42,7 +42,7 @@ export interface ParserApi {
     atLeastOnce<T>(this: Parser<T>): Parser<T[]>;
     optional<T>(this: Parser<T>): Parser<T | undefined>;
 
-    text(): Parser<string>;
+    text(this: Parser<string[]>): Parser<string>;
     named<T>(this: Parser<T>, name: string): Parser<T>;
     end<T>(this: Parser<T>): Parser<T>;
 
@@ -343,7 +343,7 @@ const parserFunctions: ParserHelpers & ParserApi = {
 
 export type Parser<T> = ParserFunction<T> & ParserHelpers & ParserApi;
 
-function MakeParser<T>(fn: ParserFunction<T>): Parser<T> {
+export function MakeParser<T>(fn: ParserFunction<T>): Parser<T> {
     return Object.assign(fn, parserFunctions);
 }
 
@@ -507,6 +507,63 @@ const Parse = {
             const result = p(i);
             i.memos.set(p, result);
             return result;
+        });
+    },
+
+    regex(regex: string | RegExp, description?: string): Parser<string> {
+        if (regex == null) {
+            throw new Error('missing pattern');
+        }
+
+        if (!(regex instanceof RegExp)) {
+            regex = new RegExp(regex);
+        }
+
+        return Parse.regexMatch(regex, description).then(match => Parse.return(match[0]));
+    },
+
+    regexMatch(regex: string | RegExp, description?: string): Parser<RegExpExecArray> {
+        if (regex == null) {
+            throw new Error('missing pattern');
+        }
+
+        if (!(regex instanceof RegExp)) {
+            regex = new RegExp(regex);
+        }
+
+        const regexString = regex.toString();
+
+        regex = new RegExp(`^(?:${regexString.slice(1, regexString.length - 1)})`);
+
+        const expectations = description == null
+            ? []
+            : [ description ];
+
+        return MakeParser(i => {
+            if (!i.atEnd) {
+                let remainder = i;
+                const input = i.source.substr(i.position);
+                const match = (regex as RegExp).exec(input);
+
+                if (match) {
+                    remainder = remainder.advance(match[0].length);
+
+                    return Result.Success(match, remainder);
+                }
+
+                // const found = match!.index === input.length
+                //                 ? "end of source"
+                //                 : `\`${input[match!.index]}'`;
+
+                const found = input[0];
+
+                return Result.Failure<RegExpExecArray>(
+                    remainder,
+                    "string matching regex `" + regex + "' expected but " + found + " found",
+                    expectations);
+            }
+
+            return Result.Failure<RegExpExecArray>(i, "Unexpected end of input", expectations);
         });
     }
 };

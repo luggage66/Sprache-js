@@ -7,7 +7,7 @@ export interface IInput {
     column: number;
     memos: Map<any, any>;
 
-    advance(): IInput;
+    advance(distance?: number): IInput;
     isEqual(otherInput: Input): boolean;
 }
 

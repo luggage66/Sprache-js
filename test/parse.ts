@@ -189,36 +189,36 @@ describe('parser of char', () => {
         assert.isTrue(r.value === undefined);
     });
 
-    // it('should RegexParserConsumesInputOnSuccessfulMatch', () => {
-    //     const digits = Parse.regex(/\d+/);
-    //     const r = digits.tryParse("123d");
-    //     assert.isTrue(r.wasSuccessful);
-    //     assert.equal("123", r.value);
-    //     assert.equal(3, r.remainder.position);
-    // });
+    it('should RegexParserConsumesInputOnSuccessfulMatch', () => {
+        const digits = Parse.regex(/\d+/);
+        const r = digits.tryParse("123d");
+        assert.isTrue(r.wasSuccessful);
+        assert.equal("123", r.value);
+        assert.equal(3, r.remainder.position);
+    });
 
-    // it('should RegexParserDoesNotConsumeInputOnFailedMatch', () => {
-    //     const digits = Parse.regex(/\d+/);
-    //     const r = digits.tryParse("d123");
-    //     assert.isFalse(r.wasSuccessful);
-    //     assert.equal(0, r.remainder.position);
-    // });
+    it('should RegexParserDoesNotConsumeInputOnFailedMatch', () => {
+        const digits = Parse.regex(/\d+/);
+        const r = digits.tryParse("d123");
+        assert.isFalse(r.wasSuccessful);
+        assert.equal(0, r.remainder.position);
+    });
 
-    // it('should RegexMatchParserConsumesInputOnSuccessfulMatch', () => {
-    //     const digits = Parse.regexMatch(/\d(\d*)/);
-    //     const r = digits.tryParse("123d");
-    //     assert.isTrue(r.wasSuccessful);
-    //     assert.equal("123", r.value.value);
-    //     assert.equal("23", r.value.Groups[1].value);
-    //     assert.equal(3, r.remainder.position);
-    // });
+    it('should RegexMatchParserConsumesInputOnSuccessfulMatch', () => {
+        const digits = Parse.regexMatch(/\d(\d*)/);
+        const r = digits.tryParse("123d");
+        assert.isTrue(r.wasSuccessful);
+        assert.equal("123", r.value![0]); // .value.value);
+        assert.equal("23", r.value![1]); // .value.Groups[1].value);
+        assert.equal(3, r.remainder.position);
+    });
 
-    // it('should RegexMatchParserDoesNotConsumeInputOnFailedMatch', () => {
-    //     const digits = Parse.regexMatch(/\d+/);
-    //     const r = digits.tryParse("d123");
-    //     assert.isFalse(r.wasSuccessful);
-    //     assert.equal(0, r.remainder.position);
-    // });
+    it('should RegexMatchParserDoesNotConsumeInputOnFailedMatch', () => {
+        const digits = Parse.regexMatch(/\d+/);
+        const r = digits.tryParse("d123");
+        assert.isFalse(r.wasSuccessful);
+        assert.equal(0, r.remainder.position);
+    });
 
     // it('should PositionedParser', () => {
     //     const pos = Parse.query(function*() {
