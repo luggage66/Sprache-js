@@ -24,9 +24,11 @@
             "program": "${workspaceRoot}/${relativeFile}",
             "internalConsoleOptions":"openOnSessionStart",
             "outFiles": [ "${workspaceRoot}/dist/**/*.js" ],
-            "args": [
-                "-r",
-                "tsconfig-paths/register"
+            "runtimeArgs": [
+                // "--require", "ts-node/register",
+                // "--require", "tsconfig-paths/register"
+                // "--require", "source-map-support/register"
+                "--require", "./register-path-map.js"
             ]
         }
     ]
