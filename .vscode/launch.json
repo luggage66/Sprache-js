@@ -21,8 +21,13 @@
             "request": "launch",
             "preLaunchTask": "build",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/dist/src/index.js",
-            "internalConsoleOptions":"openOnSessionStart"
+            "program": "${workspaceRoot}/${relativeFile}",
+            "internalConsoleOptions":"openOnSessionStart",
+            "outFiles": [ "${workspaceRoot}/dist/**/*.js" ],
+            "args": [
+                "-r",
+                "tsconfig-paths/register"
+            ]
         }
     ]
 }
