@@ -460,22 +460,20 @@ const Parse = {
             const iterator = generator();
 
             // Loop state
-            let result: Result<any>;
+            let result: Result<any> | undefined = undefined;
             let nextParser: Parser<any>;
             let done = false;
 
             do {
-                const foo = { iterator, result: result! };
-
-                ({ value: nextParser, done } = nextOrStep({ iterator, result: result! }));
+                ({ value: nextParser, done } = nextOrStep(iterator, result));
 
                 if (!done) {
                     result = nextParser(input);
                 }
-                input = result!.remainder;
             } while (!done);
 
             if (result!.wasSuccessful) {
+                input = result!.remainder;
                 return Result.Success(nextParser as Parser<any>, input);
             }
 
@@ -576,7 +574,7 @@ function nextSequenceStep<T>({ iterator, result }: { iterator: IterableIterator<
     }
 }
 
-function nextOrStep<T>({ iterator, result }: { iterator: IterableIterator<Parser<T>>, result: Result<T>}) {
+function nextOrStep<T>(iterator: IterableIterator<Parser<T>>, result?: Result<T>): IteratorResult<Parser<T>> {
     if (result && result.wasSuccessful) {
         return iterator.return!(result.value);
     } else {

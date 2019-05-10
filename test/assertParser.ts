@@ -22,11 +22,23 @@ export class AssertParser {
     public static SucceedsWith<T>(parser: Parser<T>, input: string, resultAssertion: (_: T) => void): void {
         parser.tryParse<T>(input)
             .ifFailure(f => {
-                assert(false, `Parsing of "input" failed unexpectedly. f`);
+                assert(false, `Parsing of "input" failed unexpectedly. ${f}`);
                 return f;
             })
             .ifSuccess(s => {
                 resultAssertion(s.value as T);
+                return s;
+            });
+    }
+
+    public static Succeeds<T>(parser: Parser<T>, input: string, resultAssertion: (_: SuccessResult<T>) => void): void {
+        parser.tryParse<T>(input)
+            .ifFailure(f => {
+                assert(false, `Parsing of "input" failed unexpectedly. ${f}`);
+                return f;
+            })
+            .ifSuccess(s => {
+                resultAssertion(s as any);
                 return s;
             });
     }
