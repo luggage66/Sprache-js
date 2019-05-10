@@ -6,8 +6,8 @@ import { expect, assert } from 'chai';
 export class AssertParser {
     public static SucceedsWithOne<T>(parser: Parser<T[]>, input: string, expectedResult: T): void {
         AssertParser.SucceedsWith(parser, input, t => {
-            expect(t.length).to.equal(1);
-            expect(t[0]).to.equal(expectedResult);
+            expect(t.length).toBe(1);
+            expect(t[0]).toBe(expectedResult);
         });
     }
 
@@ -48,7 +48,7 @@ export class AssertParser {
     }
 
     public static FailsAt<T>(parser: Parser<T>, input: string, position: number): void {
-        AssertParser.FailsWith(parser, input, f => expect(position).to.equal(f.remainder.position));
+        AssertParser.FailsWith(parser, input, f => expect(position).toBe(f.remainder.position));
     }
 
     public static FailsWith<T>(parser: Parser<T> , input: string , resultAssertion: (_: Result<T>) => void ): void {

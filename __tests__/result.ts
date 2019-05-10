@@ -1,6 +1,5 @@
-import 'mocha';
+
 import { Parse, Parser, Input, IInput, Result } from 'sprache';
-import { expect, assert } from 'chai';
 import { AssertParser } from './assertParser';
 import { AssertInput } from './assertInput';
 
@@ -21,7 +20,8 @@ describe('Result<T>', () => {
     it('FailureContainingBracketFormattedSuccessfully', () => {
         const p = Parse.string("xy").text().xMany().end();
         const r = p.tryParse("x{");
-        assert.isTrue(String_prototype_includes.call(r.message!, "unexpected '{'"));
+        expect(r.message).toContain("unexpected '{'")
+        // assert.isTrue(String_prototype_includes.call(r.message!, "unexpected '{'"));
     });
 
     it('FailureShowsNearbyParseResults', () => {
@@ -35,6 +35,6 @@ describe('Result<T>', () => {
 
         const expectedMessage = "Parsing failure: unexpected '{'; expected y (Line 1, Column 2); recently consumed: x";
 
-        assert.equal(expectedMessage, r.toString());
+        expect(r.toString()).toBe(expectedMessage);
     });
 });

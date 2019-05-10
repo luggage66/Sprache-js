@@ -1,6 +1,5 @@
-import 'mocha';
+
 import { Parse, Parser } from 'sprache';
-import { expect } from 'chai';
 
 describe('Hello World', () => {
     it('should work', () => {
@@ -14,6 +13,6 @@ describe('Hello World', () => {
 
         const id = identifier.parse(" abc123  ");
 
-        expect(id).to.equal("abc123");
+        expect(id).toBe("abc123");
     });
 });

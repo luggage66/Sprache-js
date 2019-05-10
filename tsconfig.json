@@ -54,7 +54,7 @@
   },
   "include": [
     "src/",
-    "test/",
+    "__tests__/",
     "examples/"
   ]
 }

@@ -1,6 +1,5 @@
-import 'mocha';
+
 import { Parse, Parser, Input, IInput, Result } from 'sprache';
-import { expect, assert } from 'chai';
 
 const Environment  = {
     NewLine: '\n'
@@ -61,12 +60,14 @@ describe('Scenerio: CSV', () => {
     it('ParsesSimpleList', () => {
         const input = "a,b";
         const r = Csv.parse(input);
-        assert.equal(1, r.length);
+        expect(r.length).toBe(1);
 
-        const l1 = r[0] || assert.fail('Expected at least one item');
-        assert.equal(2, l1.length);
-        assert.equal("a", l1[0]);
-        assert.equal("b", l1[1]);
+        expect(r.length).toBeGreaterThan
+
+        const l1 = r[0];
+        expect(l1.length).toBe(2);
+        expect(l1[0]).toBe("a");
+        expect(l1[1]).toBe("b");
     });
 
     it('ParsesListWithEmptyEnding', () => {

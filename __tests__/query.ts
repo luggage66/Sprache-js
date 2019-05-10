@@ -1,6 +1,4 @@
-import 'mocha';
 import { Parse, Parser, Result } from 'sprache';
-import { expect, assert } from 'chai';
 import { AssertParser } from './assertParser';
 
 describe('Query', () => {
@@ -28,8 +26,8 @@ describe('Query', () => {
 
     it('should Work?', () => {
         AssertParser.SucceedsWith(IntegerPlusInteger, "123+456", value => {
-            expect(value.a).to.equal(123);
-            expect(value.b).to.equal(456);
+            expect(value.a).toBe(123);
+            expect(value.b).toBe(456);
         });
     });
 
@@ -51,15 +49,15 @@ describe('QueryOr', () => {
 
     it('should ReturnsFirstMatching', () => {
 
-        AssertParser.SucceedsWith(AOrB, "AAABBC---BB--C--", value => expect(value).to.equal("AAA"));
-        AssertParser.SucceedsWith(AOrB, "BBAAA----", value => expect(value).to.equal("BB"));
+        AssertParser.SucceedsWith(AOrB, "AAABBC---BB--C--", value => expect(value).toBe("AAA"));
+        AssertParser.SucceedsWith(AOrB, "BBAAA----", value => expect(value).toBe("BB"));
     });
 
     it('should fail at starting position?', () => {
-        AssertParser.Succeeds(AOrB, "BBAAA-----", result => expect(result.remainder.position).to.equal(2));
-        AssertParser.Succeeds(AOrB, "CAAABB-------", result => expect(result.remainder.position).to.equal(1));
+        AssertParser.Succeeds(AOrB, "BBAAA-----", result => expect(result.remainder.position).toBe(2));
+        AssertParser.Succeeds(AOrB, "CAAABB-------", result => expect(result.remainder.position).toBe(1));
         AssertParser.FailsWith(AOrB, "XA", result => {
-            expect(result.remainder.position).to.equal(0);
+            expect(result.remainder.position).toBe(0);
         });
     });
 });
