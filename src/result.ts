@@ -10,8 +10,8 @@ export class Result<T> {
     }
 
     message?: string;
-    remainder: IInput;
-    expectations: string[];
+    remainder!: IInput;
+    expectations!: string[];
     value?: T;
 
     constructor(public wasSuccessful: boolean) {
