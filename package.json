@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node dist/index",
     "build": "tsc",
-    "test": "nyc mocha",
+    "test": "jest",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "homepage": "https://github.com/luggage66/Sprache-js",
@@ -35,7 +35,9 @@
     "@types/jest": "^24.0.12",
     "@types/node": "^12.0.0",
     "coveralls": "^3.0.3",
-    "jest": "^24.8.0",
+    "jest": "^24.5.0",
+    "jest-extended": "^0.11.1",
+    "prettier": "^1.16.4",
     "source-map-support": "^0.5.12",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.1.0",

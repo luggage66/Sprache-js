@@ -2,7 +2,10 @@ import { Result, FailureResult, SuccessResult } from './result';
 import { IInput, Input } from './input';
 import { ParseError } from './errors';
 
-function DetermineBestError(firstFailure: FailureResult<any>, secondFailure: FailureResult<any>) {
+function DetermineBestError(
+    firstFailure: FailureResult<any>,
+    secondFailure: FailureResult<any>
+) {
     if (secondFailure.remainder.position > firstFailure.remainder.position) {
         return secondFailure;
     }
@@ -48,9 +51,17 @@ export interface ParserApi {
 
     delimitedBy<T, U>(this: Parser<T>, delimiter: Parser<U>): Parser<T[]>;
     xDelimitedBy<T, U>(this: Parser<T>, delimiter: Parser<U>): Parser<T[]>;
-    repeat<T>(this: Parser<T>, minimumCount: number, maximumCount?: number): Parser<T[]>;
+    repeat<T>(
+        this: Parser<T>,
+        minimumCount: number,
+        maximumCount?: number
+    ): Parser<T[]>;
 
-    contained<T, U, V>(this: Parser<T>, open: Parser<U>, close: Parser<V>): Parser<T>;
+    contained<T, U, V>(
+        this: Parser<T>,
+        open: Parser<U>,
+        close: Parser<V>
+    ): Parser<T>;
 
     until<T, U>(this: Parser<T>, until: Parser<U>): Parser<T[]>;
     return<T, U>(this: Parser<T>, value: U): Parser<U>;
@@ -59,7 +70,6 @@ export interface ParserApi {
 }
 
 const parserFunctions: ParserHelpers & ParserApi = {
-
     tryParse<T>(this: Parser<T>, input: string): Result<T> {
         return this(new Input(input));
     },
@@ -77,7 +87,7 @@ const parserFunctions: ParserHelpers & ParserApi = {
 
     many<T>(this: Parser<T>): Parser<T[]> {
         if (!this) {
-            throw new Error("parser missing");
+            throw new Error('parser missing');
         }
 
         return MakeParser(i => {
@@ -127,13 +137,15 @@ const parserFunctions: ParserHelpers & ParserApi = {
     then<T, U>(this: Parser<T>, second: (_: T) => Parser<U>): Parser<U> {
         const first = this;
 
-        return MakeParser(i => first(i).ifSuccess(s => second(s.value)(s.remainder)));
+        return MakeParser(i =>
+            first(i).ifSuccess(s => second(s.value)(s.remainder))
+        );
     },
 
     once<T>(this: Parser<T>): Parser<T[]> {
         const parser = this;
 
-        return parser.select((r: T) => [ r ]);
+        return parser.select((r: T) => [r]);
     },
 
     or<T>(this: Parser<T>, second: Parser<T>): Parser<T> {
@@ -142,7 +154,12 @@ const parserFunctions: ParserHelpers & ParserApi = {
         return MakeParser(i => {
             const fr = first(i);
             if (!fr.wasSuccessful) {
-                return second(i).ifFailure(sf => DetermineBestError(fr as FailureResult<T>, sf as FailureResult<T>));
+                return second(i).ifFailure(sf =>
+                    DetermineBestError(
+                        fr as FailureResult<T>,
+                        sf as FailureResult<T>
+                    )
+                );
             }
 
             if (fr.remainder.isEqual(i)) {
@@ -164,7 +181,9 @@ const parserFunctions: ParserHelpers & ParserApi = {
                     return fr;
                 }
 
-                return second(i).ifFailure(sf => DetermineBestError(fr as FailureResult<T>, sf));
+                return second(i).ifFailure(sf =>
+                    DetermineBestError(fr as FailureResult<T>, sf)
+                );
             }
 
             // This handles a zero-length successful application of first.
@@ -176,7 +195,7 @@ const parserFunctions: ParserHelpers & ParserApi = {
         });
     },
 
-    text(this: Parser<string[]> ): Parser<string> {
+    text(this: Parser<string[]>): Parser<string> {
         const characters = this;
         return characters.select((chs: string[]) => chs.join(''));
     },
@@ -184,17 +203,23 @@ const parserFunctions: ParserHelpers & ParserApi = {
     named<T>(this: Parser<T>, name: string): Parser<T> {
         const parser = this;
 
-        return MakeParser(i => parser(i).ifFailure(f =>
-            f.remainder.isEqual(i)
-            ? Result.Failure<T>(f.remainder, f.message, [ name ])
-            : f
-        ));
+        return MakeParser(i =>
+            parser(i).ifFailure(f =>
+                f.remainder.isEqual(i)
+                    ? Result.Failure<T>(f.remainder, f.message, [name])
+                    : f
+            )
+        );
     },
 
     atLeastOnce<T>(this: Parser<T>): Parser<T[]> {
         const parser = this;
 
-        return parser.once().then((t1: T[]) => parser.many().select((ts: T[]) => t1.concat(ts)));
+        return parser
+            .once()
+            .then((t1: T[]) =>
+                parser.many().select((ts: T[]) => t1.concat(ts))
+            );
     },
 
     optional<T>(this: Parser<T>): Parser<T | undefined> {
@@ -214,14 +239,17 @@ const parserFunctions: ParserHelpers & ParserApi = {
     end<T>(this: Parser<T>): Parser<T> {
         const parser = this;
 
-        return MakeParser(i => parser(i).ifSuccess(s =>
-            s.remainder.atEnd
-                ? s
-                : Result.Failure<T>(
-                    s.remainder,
-                    `unexpected '${s.remainder.current}'`,
-                    [ "end of input" ])
-        ));
+        return MakeParser(i =>
+            parser(i).ifSuccess(s =>
+                s.remainder.atEnd
+                    ? s
+                    : Result.Failure<T>(
+                          s.remainder,
+                          `unexpected '${s.remainder.current}'`,
+                          ['end of input']
+                      )
+            )
+        );
     },
 
     delimitedBy<T, U>(this: Parser<T>, delimiter: Parser<U>): Parser<T[]> {
@@ -244,15 +272,19 @@ const parserFunctions: ParserHelpers & ParserApi = {
         return Parse.query(function*() {
             const head = yield itemParser.once();
             const tail = yield Parse.query(function*() {
-                    const separator = yield delimiter;
-                    const item = yield itemParser;
-                    return Parse.return( item);
+                const separator = yield delimiter;
+                const item = yield itemParser;
+                return Parse.return(item);
             }).xMany();
             return Parse.return(head.concat(tail));
         });
     },
 
-    repeat<T>(this: Parser<T>, minimumCount: number, maximumCount: number = minimumCount): Parser<T[]> {
+    repeat<T>(
+        this: Parser<T>,
+        minimumCount: number,
+        maximumCount: number = minimumCount
+    ): Parser<T[]> {
         const parser = this;
 
         return MakeParser(i => {
@@ -264,13 +296,15 @@ const parserFunctions: ParserHelpers & ParserApi = {
 
                 if (!r.wasSuccessful && n < minimumCount) {
                     const what = r.remainder.atEnd
-                        ? "end of input"
+                        ? 'end of input'
                         : r.remainder.current.toString();
 
                     const msg = `Unexpected '${what}'`;
-                    const exp = `'${r.expectations!.join(", ")}' between ${minimumCount} and ${maximumCount} times, but found ${n}`;
+                    const exp = `'${r.expectations!.join(
+                        ', '
+                    )}' between ${minimumCount} and ${maximumCount} times, but found ${n}`;
 
-                    return Result.Failure<T[]>(i, msg, [ exp ]);
+                    return Result.Failure<T[]>(i, msg, [exp]);
                 }
 
                 if (!(remainder === r.remainder)) {
@@ -284,21 +318,27 @@ const parserFunctions: ParserHelpers & ParserApi = {
         });
     },
 
-    contained<T, U, V>(this: Parser<T>, open: Parser<U>, close: Parser<V>): Parser<T> {
+    contained<T, U, V>(
+        this: Parser<T>,
+        open: Parser<U>,
+        close: Parser<V>
+    ): Parser<T> {
         const parser = this;
 
         return Parse.query(function*() {
             const o = yield open;
             const item = yield parser;
             const c = yield close;
-            return Parse.return( item);
+            return Parse.return(item);
         });
     },
 
     xMany<T>(this: Parser<T>): Parser<T[]> {
         const parser = this;
 
-        return parser.many().then((m: T[]) => parser.once().xOr(Parse.return(m)));
+        return parser
+            .many()
+            .then((m: T[]) => parser.once().xOr(Parse.return(m)));
     },
 
     not<T>(this: Parser<T>): Parser<any> {
@@ -308,7 +348,9 @@ const parserFunctions: ParserHelpers & ParserApi = {
             const result = parser(i);
 
             if (result.wasSuccessful) {
-                const msg = `${result.expectations!.join(", ")}' was not expected`;
+                const msg = `${result.expectations!.join(
+                    ', '
+                )}' was not expected`;
                 return Result.Failure<object>(i, msg, []);
             }
             return Result.Success<any>(null, i);
@@ -316,7 +358,10 @@ const parserFunctions: ParserHelpers & ParserApi = {
     },
     until<T, U>(this: Parser<T>, until: Parser<U>): Parser<T[]> {
         const parser = this;
-        return parser.except(until).many().then((r: T[]) => until.return(r));
+        return parser
+            .except(until)
+            .many()
+            .then((r: T[]) => until.return(r));
     },
     return<T, U>(this: Parser<T>, value: U): Parser<U> {
         const parser = this;
@@ -329,7 +374,9 @@ const parserFunctions: ParserHelpers & ParserApi = {
         return MakeParser(i => {
             const r = except(i);
             if (r.wasSuccessful) {
-                return Result.Failure<T>(i, "Excepted parser succeeded.", [ "other than the excepted input" ]);
+                return Result.Failure<T>(i, 'Excepted parser succeeded.', [
+                    'other than the excepted input'
+                ]);
             }
             return parser(i);
         });
@@ -337,7 +384,11 @@ const parserFunctions: ParserHelpers & ParserApi = {
     xAtLeastOnce<T>(this: Parser<T>): Parser<T[]> {
         const parser = this;
 
-        return parser.once().then((t1: T[]) => parser.xMany().select((ts: T[]) => t1.concat(ts)));
+        return parser
+            .once()
+            .then((t1: T[]) =>
+                parser.xMany().select((ts: T[]) => t1.concat(ts))
+            );
     }
 };
 
@@ -347,15 +398,20 @@ export function MakeParser<T>(fn: ParserFunction<T>): Parser<T> {
     return Object.assign(fn, parserFunctions);
 }
 
-function ParseChar(charOrPredicate: string | Predicate<string>, description?: string): Parser<string> {
-    if (!charOrPredicate) { throw new Error("charOrPredicate missing"); }
+function ParseChar(
+    charOrPredicate: string | Predicate<string>,
+    description?: string
+): Parser<string> {
+    if (!charOrPredicate) {
+        throw new Error('charOrPredicate missing');
+    }
 
     let predicate: Predicate<string>;
 
     // if they give us a character, turn that into a predicate
-    if (typeof(charOrPredicate) !== 'function') {
+    if (typeof charOrPredicate !== 'function') {
         const char = charOrPredicate;
-        predicate = (c) => c === char;
+        predicate = c => c === char;
         if (!description) {
             description = char;
         }
@@ -363,24 +419,33 @@ function ParseChar(charOrPredicate: string | Predicate<string>, description?: st
         predicate = charOrPredicate;
     }
 
-    if (!description) { throw new Error("description missing"); }
+    if (!description) {
+        throw new Error('description missing');
+    }
 
     return MakeParser(i => {
         if (!i.atEnd) {
             if (predicate(i.current)) {
-
                 return Result.Success(i.current, i.advance());
             }
 
-            return Result.Failure<string>(i, `unexpected '${i.current}'`, [ description! ]);
+            return Result.Failure<string>(i, `unexpected '${i.current}'`, [
+                description!
+            ]);
         }
 
-        return Result.Failure<string>(i, "Unexpected end of input reached", [ description! ]);
+        return Result.Failure<string>(i, 'Unexpected end of input reached', [
+            description!
+        ]);
     });
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes
-function String_prototype_includes(this: string, search: string, start?: number) {
+function String_prototype_includes(
+    this: string,
+    search: string,
+    start?: number
+) {
     if (typeof start !== 'number') {
         start = 0;
     }
@@ -401,38 +466,50 @@ const Parse = {
             listToMatch = c[0];
         }
 
-        return ParseChar((listToMatch.includes || String_prototype_includes).bind(c), c.join("|"));
+        return ParseChar(
+            (listToMatch.includes || String_prototype_includes).bind(c),
+            c.join('|')
+        );
     },
-    whiteSpace: ParseChar(c => / /.test(c), "whitespace"),
-    letter: ParseChar(c => /[a-zA-Z]/.test(c), "a letter"),
-    letterOrDigit: ParseChar(c => /[a-zA-Z0-9]/.test(c), "a letter or digit"),
-    digit: ParseChar(c => /[0-9]/.test(c), "a digit"),
+    whiteSpace: ParseChar(c => / /.test(c), 'whitespace'),
+    letter: ParseChar(c => /[a-zA-Z]/.test(c), 'a letter'),
+    letterOrDigit: ParseChar(c => /[a-zA-Z0-9]/.test(c), 'a letter or digit'),
+    digit: ParseChar(c => /[0-9]/.test(c), 'a digit'),
     anyChar: ParseChar(() => true, 'any character'),
-    ignoreCase: (word: string) => Parse.query<string[]>(function*() {
-        const foundChars = [];
+    ignoreCase: (word: string) =>
+        Parse.query<string[]>(function*() {
+            const foundChars = [];
 
-        for (const letter of word) {
-            foundChars.push(yield Parse.char(ch => letter.toLowerCase() === ch.toLowerCase(), letter));
-        }
+            for (const letter of word) {
+                foundChars.push(
+                    yield Parse.char(
+                        ch => letter.toLowerCase() === ch.toLowerCase(),
+                        letter
+                    )
+                );
+            }
 
-        return Parse.return(foundChars);
-    }),
-    string: (word: string) => Parse.query<string[]>(function*() {
-        const foundChars = [];
+            return Parse.return(foundChars);
+        }),
+    string: (word: string) =>
+        Parse.query<string[]>(function*() {
+            const foundChars = [];
 
-        for (const letter of word) {
-            foundChars.push(yield Parse.char(letter, letter));
-        }
+            for (const letter of word) {
+                foundChars.push(yield Parse.char(letter, letter));
+            }
 
-        return Parse.return(foundChars);
-    }),
+            return Parse.return(foundChars);
+        }),
     return<T>(value: T): Parser<T> {
         return MakeParser(i => Result.Success(value, i));
     },
 
-    query<U>(generator: () => IterableIterator<Parser<any>>, message?: string): Parser<U> {
+    query<U>(
+        generator: () => IterableIterator<Parser<any>>,
+        message?: string
+    ): Parser<U> {
         return MakeParser((input: IInput) => {
-
             const iterator = generator();
 
             // Loop state
@@ -441,7 +518,10 @@ const Parse = {
             let done = false;
 
             do {
-                const nextStep = nextSequenceStep({ iterator, result: result!});
+                const nextStep = nextSequenceStep({
+                    iterator,
+                    result: result!
+                });
 
                 nextParser = nextStep.value; // You yield Parser<T>'s and return U's
                 done = nextStep.done;
@@ -454,9 +534,11 @@ const Parse = {
         });
     },
 
-    queryOr<U>(generator: () => IterableIterator<Parser<any>>, message?: string): Parser<U> {
+    queryOr<U>(
+        generator: () => IterableIterator<Parser<any>>,
+        message?: string
+    ): Parser<U> {
         return MakeParser((input: IInput) => {
-
             const iterator = generator();
 
             // Loop state
@@ -478,16 +560,16 @@ const Parse = {
             }
 
             if (!result!) {
-                throw Error("Error empty-or?");
+                throw Error('Error empty-or?');
             }
 
             return result! as any;
         });
     },
 
-    ref<T>(reference: () => Parser<T> ): Parser<T> {
+    ref<T>(reference: () => Parser<T>): Parser<T> {
         if (reference == null) {
-            throw new Error("argument reference null");
+            throw new Error('argument reference null');
         }
 
         let p: Parser<T>;
@@ -501,7 +583,10 @@ const Parse = {
                 throw new ParseError(i.memos.get(p).toString());
             }
 
-            i.memos.set(p, Result.Failure<T>(i, "Left recursion in the grammar.", []));
+            i.memos.set(
+                p,
+                Result.Failure<T>(i, 'Left recursion in the grammar.', [])
+            );
             const result = p(i);
             i.memos.set(p, result);
             return result;
@@ -517,10 +602,15 @@ const Parse = {
             regex = new RegExp(regex);
         }
 
-        return Parse.regexMatch(regex, description).then(match => Parse.return(match[0]));
+        return Parse.regexMatch(regex, description).then(match =>
+            Parse.return(match[0])
+        );
     },
 
-    regexMatch(regex: string | RegExp, description?: string): Parser<RegExpExecArray> {
+    regexMatch(
+        regex: string | RegExp,
+        description?: string
+    ): Parser<RegExpExecArray> {
         if (regex == null) {
             throw new Error('missing pattern');
         }
@@ -531,11 +621,11 @@ const Parse = {
 
         const regexString = regex.toString();
 
-        regex = new RegExp(`^(?:${regexString.slice(1, regexString.length - 1)})`);
+        regex = new RegExp(
+            `^(?:${regexString.slice(1, regexString.length - 1)})`
+        );
 
-        const expectations = description == null
-            ? []
-            : [ description ];
+        const expectations = description == null ? [] : [description];
 
         return MakeParser(i => {
             if (!i.atEnd) {
@@ -557,16 +647,31 @@ const Parse = {
 
                 return Result.Failure<RegExpExecArray>(
                     remainder,
-                    "string matching regex `" + regex + "' expected but " + found + " found",
-                    expectations);
+                    'string matching regex `' +
+                        regex +
+                        "' expected but " +
+                        found +
+                        ' found',
+                    expectations
+                );
             }
 
-            return Result.Failure<RegExpExecArray>(i, "Unexpected end of input", expectations);
+            return Result.Failure<RegExpExecArray>(
+                i,
+                'Unexpected end of input',
+                expectations
+            );
         });
     }
 };
 
-function nextSequenceStep<T>({ iterator, result }: { iterator: IterableIterator<Parser<T>>, result: Result<T>}) {
+function nextSequenceStep<T>({
+    iterator,
+    result
+}: {
+    iterator: IterableIterator<Parser<T>>;
+    result: Result<T>;
+}) {
     if (result && !result.wasSuccessful) {
         return iterator.return!(MakeParser(i => result));
     } else {
@@ -574,7 +679,10 @@ function nextSequenceStep<T>({ iterator, result }: { iterator: IterableIterator<
     }
 }
 
-function nextOrStep<T>(iterator: IterableIterator<Parser<T>>, result?: Result<T>): IteratorResult<Parser<T>> {
+function nextOrStep<T>(
+    iterator: IterableIterator<Parser<T>>,
+    result?: Result<T>
+): IteratorResult<Parser<T>> {
     if (result && result.wasSuccessful) {
         return iterator.return!(result.value);
     } else {

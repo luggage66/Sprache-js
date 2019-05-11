@@ -18,15 +18,18 @@ export class Input implements IInput {
         public source: string,
         public position: number = 0,
         public line: number = 1,
-        public column: number = 1) {
-    }
+        public column: number = 1
+    ) {}
 
     get atEnd() {
         return this.position === this.source.length;
     }
 
     isEqual(otherInput: Input) {
-        return this.source === otherInput.source && this.position === otherInput.position;
+        return (
+            this.source === otherInput.source &&
+            this.position === otherInput.position
+        );
     }
 
     get current() {
@@ -35,7 +38,9 @@ export class Input implements IInput {
 
     advance(distance: number = 1) {
         if (this.atEnd) {
-            throw new Error("Already at the end of the stream, can't advance()");
+            throw new Error(
+                "Already at the end of the stream, can't advance()"
+            );
         }
 
         const current = this.current;
@@ -43,7 +48,12 @@ export class Input implements IInput {
         const newLineNumber = current === '\n' ? this.line + 1 : this.line;
         const newColumnNumber = current === '\n' ? 1 : this.column + distance;
 
-        return new Input(this.source, this.position + distance, newLineNumber, newColumnNumber);
+        return new Input(
+            this.source,
+            this.position + distance,
+            newLineNumber,
+            newColumnNumber
+        );
     }
 
     toString() {

@@ -5,7 +5,11 @@ export class Result<T> {
         return new SuccessResult<T>(value, remainder);
     }
 
-    static Failure<T>(remainder: IInput, message: string, expectations: string[]): FailureResult<T> {
+    static Failure<T>(
+        remainder: IInput,
+        message: string,
+        expectations: string[]
+    ): FailureResult<T> {
         return new FailureResult<T>(remainder, message, expectations);
     }
 
@@ -14,8 +18,7 @@ export class Result<T> {
     expectations!: string[];
     value?: T;
 
-    constructor(public wasSuccessful: boolean) {
-    }
+    constructor(public wasSuccessful: boolean) {}
 
     ifSuccess<U>(next: (foo: SuccessResult<T>) => Result<U>): Result<U> {
         if (this.wasSuccessful) {
@@ -30,7 +33,9 @@ export class Result<T> {
     ifFailure<U>(next: (foo: FailureResult<U>) => Result<any>): Result<U> {
         const result = this;
 
-        return (result.wasSuccessful ? result : next(result as FailureResult<any>)) as Result<U>;
+        return (result.wasSuccessful
+            ? result
+            : next(result as FailureResult<any>)) as Result<U>;
     }
 
     toString() {
@@ -38,15 +43,19 @@ export class Result<T> {
             return `Successful parsing of ${this.value}.`;
         }
 
-        let expMsg = "";
+        let expMsg = '';
 
         if (this.expectations.length) {
-            expMsg = " expected " + this.expectations.reduce((e1, e2) => e1 + " or " + e2);
+            expMsg =
+                ' expected ' +
+                this.expectations.reduce((e1, e2) => e1 + ' or ' + e2);
         }
 
         const recentlyConsumed = this.calculateRecentlyConsumed();
 
-        return `Parsing failure: ${this.message};${expMsg} (${this.remainder}); recently consumed: ${recentlyConsumed}`;
+        return `Parsing failure: ${this.message};${expMsg} (${
+            this.remainder
+        }); recently consumed: ${recentlyConsumed}`;
     }
 
     private calculateRecentlyConsumed(): string {
@@ -58,7 +67,10 @@ export class Result<T> {
 
         const numberOfRecentlyConsumedChars = totalConsumedChars - windowStart;
 
-        return this.remainder.source.substr(windowStart, numberOfRecentlyConsumedChars);
+        return this.remainder.source.substr(
+            windowStart,
+            numberOfRecentlyConsumedChars
+        );
     }
 }
 
@@ -70,7 +82,11 @@ export class SuccessResult<T> extends Result<T> {
 }
 
 export class FailureResult<T> extends Result<T> {
-    constructor(public remainder: IInput, public message: string, public expectations: string[]) {
+    constructor(
+        public remainder: IInput,
+        public message: string,
+        public expectations: string[]
+    ) {
         super(false);
     }
 }

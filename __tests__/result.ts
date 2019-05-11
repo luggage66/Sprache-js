@@ -1,9 +1,10 @@
-
 import { Parse, Parser, Input, IInput, Result } from 'sprache';
-import { AssertParser } from './assertParser';
-import { AssertInput } from './assertInput';
 
-function String_prototype_includes(this: string, search: string, start?: number) {
+function String_prototype_includes(
+    this: string,
+    search: string,
+    start?: number
+) {
     if (typeof start !== 'number') {
         start = 0;
     }
@@ -16,11 +17,17 @@ function String_prototype_includes(this: string, search: string, start?: number)
 }
 
 describe('Result<T>', () => {
+    beforeAll(() => {
+        expect.hasAssertions();
+    });
 
     it('FailureContainingBracketFormattedSuccessfully', () => {
-        const p = Parse.string("xy").text().xMany().end();
-        const r = p.tryParse("x{");
-        expect(r.message).toContain("unexpected '{'")
+        const p = Parse.string('xy')
+            .text()
+            .xMany()
+            .end();
+        const r = p.tryParse('x{');
+        expect(r.message).toContain("unexpected '{'");
         // assert.isTrue(String_prototype_includes.call(r.message!, "unexpected '{'"));
     });
 
@@ -31,9 +38,10 @@ describe('Result<T>', () => {
             return Parse.return(`${a},${b}`);
         });
 
-        const r = p.tryParse("x{");
+        const r = p.tryParse('x{');
 
-        const expectedMessage = "Parsing failure: unexpected '{'; expected y (Line 1, Column 2); recently consumed: x";
+        const expectedMessage =
+            "Parsing failure: unexpected '{'; expected y (Line 1, Column 2); recently consumed: x";
 
         expect(r.toString()).toBe(expectedMessage);
     });
