@@ -5,3 +5,4 @@ test/
 examples/
 dist/examples
 dist/test
+coverage/
