@@ -1,4 +1,4 @@
-import { Parse, Parser } from 'sprache';
+import { Parse, Parser } from '../';
 
 describe('Hello World', () => {
     beforeAll(() => {

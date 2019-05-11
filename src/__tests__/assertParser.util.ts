@@ -1,6 +1,4 @@
-import { Result } from '../src/result';
-import { Parse, Parser } from '../src/parse';
-import { SuccessResult } from '../src/result';
+import { Parse, Parser, Result, SuccessResult } from '../';
 
 export class AssertParser {
     public static SucceedsWithOne<T>(

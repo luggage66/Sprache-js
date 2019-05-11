@@ -1,4 +1,4 @@
-import { IInput, Input } from '../src/input';
+import { IInput, Input } from '../';
 
 export class AssertInput {
     static AdvanceMany(input: IInput, count: number): IInput {

@@ -1,4 +1,4 @@
-import { Parse, Parser, Input, IInput, Result } from 'sprache';
+import { Parse, Parser, Input, IInput, Result } from '../';
 import { AssertInput } from './assertInput.util';
 
 describe('inputs', () => {

@@ -1,4 +1,4 @@
-import { Parse, Parser, Input, IInput, Result } from 'sprache';
+import { Parse, Parser, Input, IInput, Result } from '../';
 
 function String_prototype_includes(
     this: string,

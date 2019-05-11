@@ -1,4 +1,4 @@
-import { Parse, Parser, Result } from 'sprache';
+import { Parse, Parser, Result } from '../';
 import { AssertParser } from './assertParser.util';
 
 describe('Query', () => {

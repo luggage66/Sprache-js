@@ -621,8 +621,11 @@ const Parse = {
 
         const regexString = regex.toString();
 
+        // modify regexp to look for the string at the beginning of the current remainder
+        const lastIndexOfRegex = regexString.lastIndexOf('/');
         regex = new RegExp(
-            `^(?:${regexString.slice(1, regexString.length - 1)})`
+            `^(?:${regexString.slice(1, lastIndexOfRegex)})`,
+            regexString.slice(lastIndexOfRegex + 1, regexString.length)
         );
 
         const expectations = description == null ? [] : [description];

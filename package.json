@@ -1,6 +1,6 @@
 {
   "name": "sprache",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "license": "MIT",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -8,7 +8,7 @@
     "start": "node dist/index",
     "build": "tsc",
     "test": "jest",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "homepage": "https://github.com/luggage66/Sprache-js",
   "bugs": {
