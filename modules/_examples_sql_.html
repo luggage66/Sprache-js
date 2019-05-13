@@ -106,7 +106,7 @@
 					<div class="tsd-signature tsd-kind-icon">Comparison<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.query(function*() {const lhs &#x3D; yield Identifier;yield Parse.char(&#x27;&#x3D;&#x27;, &#x27;Equals Sign&#x27;);const rhs &#x3D; yield Identifier;return Parse.return({$type: &#x27;COMPARISON&#x27;,lhs,rhs});})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L30">examples/sql.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L30">examples/sql.ts:30</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -116,7 +116,7 @@
 					<div class="tsd-signature tsd-kind-icon">Digit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.char(c &#x3D;&gt; /[0-9]/.test(c), &quot;A number&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L4">examples/sql.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L4">examples/sql.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -126,7 +126,7 @@
 					<div class="tsd-signature tsd-kind-icon">Digit<wbr>OrLetter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.queryOr&lt;string&gt;(function*() {yield Digit;yield Letter;})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L6">examples/sql.ts:6</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L6">examples/sql.ts:6</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -136,7 +136,7 @@
 					<div class="tsd-signature tsd-kind-icon">From<wbr>Clause<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.query(function*() {yield Parse.string(&quot;FROM&quot;);const tableName &#x3D; yield Identifier;return Parse.return({$type: &#x27;FROM_CLAUSE&#x27;,tableName}) as any;})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L55">examples/sql.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L55">examples/sql.ts:55</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -146,7 +146,7 @@
 					<div class="tsd-signature tsd-kind-icon">Identifier<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.query(function*() {const letter &#x3D; yield Letter;const rest &#x3D; yield DigitOrLetter.many();return Parse.return([letter].concat(rest)).text() as any;}).token()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L23">examples/sql.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L23">examples/sql.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -156,7 +156,7 @@
 					<div class="tsd-signature tsd-kind-icon">Letter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.char(c &#x3D;&gt; /[a-zA-Z]/.test(c), &quot;A letter&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L3">examples/sql.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L3">examples/sql.ts:3</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -166,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">Select<wbr>Clause<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.query(function*() {yield Parse.string(&quot;SELECT&quot;);const columns &#x3D; yield SeparatedList(&#x27;,&#x27;, Identifier);return Parse.return({$type: &quot;SELECT_CLAUSE&quot;,columns});})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L44">examples/sql.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L44">examples/sql.ts:44</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -176,7 +176,7 @@
 					<div class="tsd-signature tsd-kind-icon">Where<wbr>Clause<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.query(function*() {yield Parse.string(&quot;WHERE&quot;);const conditions &#x3D; yield Comparison.many();return Parse.return({$type: &#x27;WHERE_CLAUSE&#x27;,conditions}) as any;})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L66">examples/sql.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L66">examples/sql.ts:66</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +193,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/f4f801c/src/examples/sql.ts#L11">examples/sql.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/sql.ts#L11">examples/sql.ts:11</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
