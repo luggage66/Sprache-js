@@ -3,15 +3,17 @@ node_js:
 - '6'
 - '8'
 - '10'
-after_success: npm run coverage
+after_success:
+  - npm run coverage
+  - npm run build:docs
 deploy:
-    provider: pages
-    skip_cleanup: true
-    github_token: $GITHUB_TOKEN
-    keep_history: true
-    on:
-        branch: master
-    local_dir: documentation
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  on:
+  branch: master
+  local_dir: documentation
 notifications:
   webhooks:
     urls:
