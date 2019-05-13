@@ -1,4 +1,4 @@
-import { Parse } from '../src';
+import { Parse } from 'sprache';
 
 const Float = Parse
     .regex(/[0-9]+\.[0-9]+/)
