@@ -1,3 +1,11 @@
+---
+
+stages:
+  - compile
+  - test
+  - name: deploy
+    if: branch = master
+
 language: node_js
 node_js:
 - '6'
@@ -6,14 +14,7 @@ node_js:
 after_success:
   - npm run coverage
   - npm run build:docs
-deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  keep_history: true
-  on:
-  branch: master
-  local_dir: documentation
+
 notifications:
   webhooks:
     urls:
@@ -24,3 +25,16 @@ notifications:
 env:
   global:
     secure: cVh9zZxzLid/UW+ulDQsSlXD1lxpZVnR+GjTQmXL64DoNAM6KFcITTXi+lDCY1YLSgcVyUUBqPuUEF9AYJ6TUo/cvrsP0eo5EmEkISU77DpF4DwY+47wrj9hbTv7RynmNtKW3csqgtz3cjiAEkISr3lHk4drNO224kdS0k4CUZ4bshMc5LZrExbi+ZRbwxF186ibHWhfNMg/k+pLT35tGgx5OOybCweeizDtiTvwNwkSS1hchzxa2slwrKLUzq0U4yHsu7zBJC3S2o5yN3xJReKmq8YO/bdFU10t/8HDrss5PC1dE1jYyfkw640qpLHvOxcXR+b4ENPVaMCz9x1UavdCcnV6MzoAoNHkF+raapnUqd6a897eLatmLUVSmtrVdh+Nf6ln361LVvEpk+vOTQK5v/fFnwUGdPtEv0bk2u2uEc95Ed3KhjCnxpcMgPbtJZkFy2Hg6s4hHuC5o93NV7/xVlWZOV8uFAvRXrhTzLUPnhbB9hklRqSNaZUpYjiccvotw4/YLQEqgb2ORyXyN+R3bcyBirHYq2aJWJHYwPh7y65QCh4+3wqeLMQHCcgEeuWEKwm8FcfvXXftbW+gTRr5EUyUYsBzIqxaM01QfQvWtTukZ3woErd3WDZ7hLLHUvciBHIGM4E+yvcZbPfUwKxhDLLgwRk9Zi0Yh+Lm5EE=
+
+jobs:
+  include:
+    - stage: deploy
+      name: Deploy Documentation
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN
+        keep_history: true
+        on:
+        branch: master
+        local_dir: documentation
