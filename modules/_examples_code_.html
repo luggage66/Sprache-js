@@ -89,7 +89,7 @@
 					<div class="tsd-signature tsd-kind-icon">Arithmetic<wbr>Operation<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.query(function*() {const lhs       &#x3D; yield IntegerLiteral.token();const operator  &#x3D; yield Parse.chars(&#x27;+-/*&#x27;);const rhs       &#x3D; yield IntegerLiteral.token();return Parse.return({$type: &quot;arithmetic&quot;,operator,lhs,rhs});})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/code.ts#L5">examples/code.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/54422e5/src/examples/code.ts#L5">examples/code.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -99,7 +99,7 @@
 					<div class="tsd-signature tsd-kind-icon">Integer<wbr>Literal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserhelpers.html" class="tsd-signature-type">ParserHelpers</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/_parse_.parserapi.html" class="tsd-signature-type">ParserApi</a><span class="tsd-signature-symbol"> =&nbsp;Parse.digit.atLeastOnce().text().select(str &#x3D;&gt; Number(str))</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/code.ts#L3">examples/code.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/54422e5/src/examples/code.ts#L3">examples/code.ts:3</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -109,7 +109,7 @@
 					<div class="tsd-signature tsd-kind-icon">ast<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span><span class="tsd-signature-symbol"> =&nbsp;ArithmeticOperation.parse(&quot;3+42&quot;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/1a179e2/src/examples/code.ts#L18">examples/code.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/luggage66/Sprache-js/blob/54422e5/src/examples/code.ts#L18">examples/code.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
