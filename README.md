@@ -43,7 +43,7 @@ Assert.isEqual("abc123", id);
 
 ## More Examples
 
-More examples are available in [examples/](https://github.com/luggage66/Sprache-js/tree/master/examples)
+More examples are available in [src/examples/](https://github.com/luggage66/Sprache-js/tree/master/src/examples)
 
 ## Building / Running examples
 
