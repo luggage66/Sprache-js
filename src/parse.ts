@@ -21,6 +21,9 @@ function DetermineBestError(
     return firstFailure;
 }
 
+/**
+ * The signature of every undecorated parser.
+ */
 export type ParserFunction<T> = (input: IInput) => Result<T>;
 type Predicate<T> = (input: T) => boolean;
 
@@ -394,6 +397,10 @@ const parserFunctions: ParserHelpers & ParserApi = {
 
 export type Parser<T> = ParserFunction<T> & ParserHelpers & ParserApi;
 
+/**
+ * Turn a function into a parser. This assigns functions like .tryParse() and .atLeastOnce(), etc.
+ * @param fn The parse function to wrap/decorate
+ */
 export function MakeParser<T>(fn: ParserFunction<T>): Parser<T> {
     return Object.assign(fn, parserFunctions);
 }

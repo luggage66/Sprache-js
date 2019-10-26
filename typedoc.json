@@ -1,2 +1,13 @@
 {
+    "excludeExternals": true,
+    "excludeNotExported": true,
+    "includeDeclarations": true,
+    "src": [
+        "src"
+    ],
+    "exclude": [
+        "**/__tests__/**/*.ts",
+        "**/*.test.ts"
+    ],
+    "out": "documentation"
 }
