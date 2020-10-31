@@ -32,21 +32,8 @@ jobs:
       - store_test_results:
           path: junit.xml
 
-  deploy-docs:
-    docker:
-      - image: cimg/node:lts
-    working_directory: /sprache
-    steps:
-      - run: "echo TODO: Deploy docs"
-
 workflows:
   version: 2
   build-deploy:
     jobs:
       - build
-      - deploy-docs:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
