@@ -8,12 +8,12 @@ stages:
 
 language: node_js
 node_js:
-- '6'
-- '8'
 - '10'
+- '12'
+- '14'
 after_success:
-  - npm run coverage
-  - npm run build:docs
+  - yarn run coverage
+  - yarn run build:docs
 
 notifications:
   webhooks:

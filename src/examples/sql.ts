@@ -21,8 +21,8 @@ const SeparatedList = (separator: string, parser: Parser<any>) => Parse.query(fu
 });
 
 const Identifier = Parse.query(function*() {
-    const letter = yield Letter;
-    const rest = yield DigitOrLetter.many();
+    const letter = (yield Letter) as unknown as string;
+    const rest = (yield DigitOrLetter.many()) as unknown as string[];
 
     return Parse.return([letter].concat(rest)).text() as any;
 }).token();

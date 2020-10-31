@@ -48,15 +48,15 @@ More examples are available in [src/examples/](https://github.com/luggage66/Spra
 ## Building / Running examples
 
 ```sh
-npm install
-npm run build
-npm run test
+yarn install
+yarn run build
+yarn run test
 ```
 
 To run as example
 
 ```sh
-npm run build && node dist/examples/sql
+yarn run build && node dist/examples/sql
 ```
 
 Is VSCode, just run task "npm: install", then F5 to run.

@@ -3,21 +3,21 @@ import { AssertParser } from './assertParser.util';
 import 'jest-extended';
 
 const ASeq: Parser<string[]> = Parse.query<string[]>(function*() {
-    const first = yield Parse.ref(() => ASeq);
+    const first = (yield Parse.ref(() => ASeq)) as unknown as string[];
     const comma = yield Parse.char(',');
-    const rest = yield Parse.char('a').once();
+    const rest = (yield Parse.char('a').once()) as unknown as string[];
     return Parse.return(first.concat(rest));
 }).or(Parse.char('a').once());
 
 const ABSeq: Parser<string[]> = Parse.query<string[]>(function*() {
-    const first = yield Parse.ref(() => BASeq);
-    const rest = yield Parse.char('a').once();
+    const first = (yield Parse.ref(() => BASeq)) as unknown as string[];
+    const rest = (yield Parse.char('a').once()) as unknown as string[];
     return Parse.return(first.concat(rest));
 }).or(Parse.char('a').once());
 
 const BASeq: Parser<string[]> = Parse.query<string[]>(function*() {
-    const first = yield Parse.ref(() => ABSeq);
-    const rest = yield Parse.char('b').once();
+    const first = (yield Parse.ref(() => ABSeq)) as unknown as string[];
+    const rest = (yield Parse.char('b').once()) as unknown as string[];
     return Parse.return(first.concat(rest));
 }).or(Parse.char('b').once());
 
@@ -104,9 +104,9 @@ describe('parser of char', () => {
 
     it('should CanSpecifyParsersUsingQueryComprehensions', () => {
         const p = Parse.query<string[]>(function*() {
-            const a = yield Parse.char('a').once();
-            const bs = yield Parse.char('b').many();
-            const cs = yield Parse.char('c').atLeastOnce();
+            const a = (yield Parse.char('a').once()) as unknown as string[];
+            const bs = (yield Parse.char('b').many()) as unknown as string[];
+            const cs = (yield Parse.char('c').atLeastOnce()) as unknown as string[];
             return Parse.return(a.concat(bs).concat(cs));
         });
 

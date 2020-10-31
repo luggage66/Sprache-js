@@ -114,7 +114,7 @@ const parserFunctions: ParserHelpers & ParserApi = {
 
     token<T>(this: Parser<T>): Parser<T> {
         const parser = this;
-        return Parse.query(function*() {
+        return Parse.query(function* () {
             yield Parse.whiteSpace.many();
 
             const item = yield parser;
@@ -247,10 +247,10 @@ const parserFunctions: ParserHelpers & ParserApi = {
                 s.remainder.atEnd
                     ? s
                     : Result.Failure<T>(
-                          s.remainder,
-                          `unexpected '${s.remainder.current}'`,
-                          ['end of input']
-                      )
+                        s.remainder,
+                        `unexpected '${s.remainder.current}'`,
+                        ['end of input']
+                    )
             )
         );
     },
@@ -258,13 +258,13 @@ const parserFunctions: ParserHelpers & ParserApi = {
     delimitedBy<T, U>(this: Parser<T>, delimiter: Parser<U>): Parser<T[]> {
         const parser = this;
 
-        return Parse.query(function*() {
-            const head = yield parser.once();
-            const tail = yield Parse.query(function*() {
+        return Parse.query(function* () {
+            const head = (yield parser.once()) as unknown as T[];
+            const tail = (yield Parse.query(function* () {
                 const separator = yield delimiter;
                 const item = yield parser;
                 return Parse.return(item);
-            }).many();
+            }).many()) as unknown as T;
             return Parse.return(head.concat(tail));
         });
     },
@@ -272,13 +272,13 @@ const parserFunctions: ParserHelpers & ParserApi = {
     xDelimitedBy<T, U>(this: Parser<T>, delimiter: Parser<U>): Parser<T[]> {
         const itemParser = this;
 
-        return Parse.query(function*() {
-            const head = yield itemParser.once();
-            const tail = yield Parse.query(function*() {
+        return Parse.query(function* () {
+            const head = (yield itemParser.once()) as unknown as T[];
+            const tail = (yield Parse.query(function* () {
                 const separator = yield delimiter;
                 const item = yield itemParser;
                 return Parse.return(item);
-            }).xMany();
+            }).xMany()) as unknown as T;
             return Parse.return(head.concat(tail));
         });
     },
@@ -328,7 +328,7 @@ const parserFunctions: ParserHelpers & ParserApi = {
     ): Parser<T> {
         const parser = this;
 
-        return Parse.query(function*() {
+        return Parse.query(function* () {
             const o = yield open;
             const item = yield parser;
             const c = yield close;
@@ -484,7 +484,7 @@ const Parse = {
     digit: ParseChar(c => /[0-9]/.test(c), 'a digit'),
     anyChar: ParseChar(() => true, 'any character'),
     ignoreCase: (word: string) =>
-        Parse.query<string[]>(function*() {
+        Parse.query<string[]>(function* () {
             const foundChars = [];
 
             for (const letter of word) {
@@ -499,7 +499,7 @@ const Parse = {
             return Parse.return(foundChars);
         }),
     string: (word: string) =>
-        Parse.query<string[]>(function*() {
+        Parse.query<string[]>(function* () {
             const foundChars = [];
 
             for (const letter of word) {
@@ -522,7 +522,7 @@ const Parse = {
             // Loop state
             let result: Result<any>;
             let nextParser: Parser<any>;
-            let done = false;
+            let done : boolean | undefined = false;
 
             do {
                 const nextStep = nextSequenceStep({
@@ -551,7 +551,7 @@ const Parse = {
             // Loop state
             let result: Result<any> | undefined = undefined;
             let nextParser: Parser<any>;
-            let done = false;
+            let done: boolean | undefined = false;
 
             do {
                 ({ value: nextParser, done } = nextOrStep(iterator, result));
@@ -658,10 +658,10 @@ const Parse = {
                 return Result.Failure<RegExpExecArray>(
                     remainder,
                     'string matching regex `' +
-                        regex +
-                        "' expected but " +
-                        found +
-                        ' found',
+                    regex +
+                    "' expected but " +
+                    found +
+                    ' found',
                     expectations
                 );
             }
@@ -679,7 +679,7 @@ function nextSequenceStep<T>({
     iterator,
     result
 }: {
-    iterator: IterableIterator<Parser<T>>;
+    iterator: Iterator<Parser<T>, any, unknown>;
     result: Result<T>;
 }) {
     if (result && !result.wasSuccessful) {
@@ -690,7 +690,7 @@ function nextSequenceStep<T>({
 }
 
 function nextOrStep<T>(
-    iterator: IterableIterator<Parser<T>>,
+    iterator: Iterator<Parser<T>, any, unknown>,
     result?: Result<T>
 ): IteratorResult<Parser<T>> {
     if (result && result.wasSuccessful) {
