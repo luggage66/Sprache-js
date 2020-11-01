@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node dist/index",
     "build": "tsc",
+    "clean": "rimraf dist documentation coverage",
     "test": "jest",
     "test:ci": "jest --ci --collectCoverage --reporters=\"default\" --reporters=\"jest-junit\"",
     "build:docs": "typedoc --out documentation src"
@@ -40,6 +41,7 @@
     "jest-extended": "^0.11.1",
     "jest-junit": "^12.0.0",
     "prettier": "^2.1.2",
+    "rimraf": "^3.0.2",
     "source-map-support": "^0.5.12",
     "ts-jest": "^26.4.3",
     "ts-node": "^9.0.0",
