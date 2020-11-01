@@ -40,6 +40,34 @@ jobs:
       - store_test_results:
           path: junit.xml
 
+  publish:
+    docker:
+      - image: cimg/node:lts
+
+    working_directory: ~/sprache
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+
+      - run: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+      - run: yarn build
+      - run:
+          name: publish
+          command: yarn run semantic-release --dry-run || true
+
   test:
     parameters:
       os:
@@ -74,3 +102,4 @@ workflows:
             parameters:
               os: [linux]
               node-version: ["10.23.0", "12.19.0", "14.15.0"]
+      - publish
