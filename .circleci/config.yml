@@ -8,12 +8,36 @@ executors:
 orbs:
   node: circleci/node@2.0.0
 
+commands:
+  save-workspace:
+    parameters:
+      attach_path:
+        type: string
+        default: /sprache
+    steps:
+      - persist_to_workspace:
+          root: <<parameters.attach_path>>
+          paths:
+            - "dist"
+            - "documentation"
+            - "coverage"
+            - "junit.xml"
+  load-workspace:
+    parameters:
+      attach_path:
+        type: string
+        default: /sprache
+    steps:
+      - checkout
+      - attach_workspace:
+          at: <<parameters.attach_path>>
+
 jobs:
   build:
     docker:
       - image: cimg/node:lts
 
-    working_directory: ~/sprache
+    working_directory: /sprache
 
     steps:
       - checkout
@@ -40,14 +64,16 @@ jobs:
       - store_test_results:
           path: junit.xml
 
+      - save-workspace
+
   publish:
     docker:
       - image: cimg/node:lts
 
-    working_directory: ~/sprache
+    working_directory: /sprache
 
     steps:
-      - checkout
+      - load-workspace
 
       - restore_cache:
           keys:
@@ -63,7 +89,6 @@ jobs:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-      - run: yarn build
       - run:
           name: publish
           command: yarn run semantic-release --dry-run || true
@@ -95,13 +120,13 @@ workflows:
   build-deploy:
     jobs:
       - build
-      - test:
-          requires:
-            - build
-          matrix:
-            parameters:
-              os: [linux]
-              node-version: ["10.23.0", "12.19.0", "14.15.0"]
+      # - test:
+      #     requires:
+      #       - build
+      #     matrix:
+      #       parameters:
+      #         os: [linux]
+      #         node-version: ["10.23.0", "12.19.0", "14.15.0"]
       - publish:
           requires:
-            - test
+            - build
