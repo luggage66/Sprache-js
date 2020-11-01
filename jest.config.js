@@ -5,5 +5,6 @@ module.exports = {
       "\.util\.",
       "\.d\.ts$",
       "/dist/"
-  ]
+  ],
+  setupFilesAfterEnv: ["jest-extended"]
 };
