@@ -102,4 +102,6 @@ workflows:
             parameters:
               os: [linux]
               node-version: ["10.23.0", "12.19.0", "14.15.0"]
-      - publish
+      - publish:
+          requires:
+            - test
