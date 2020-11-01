@@ -91,7 +91,7 @@ jobs:
 
       - run:
           name: publish
-          command: yarn run semantic-release --dry-run || true
+          command: yarn run semantic-release || true
 
   test:
     parameters:
