@@ -97,6 +97,9 @@ jobs:
     executor: << parameters.os >>
     steps:
       - load-workspace
+      - node/install:
+          node-version: << parameters.node-version >>
+          install-yarn: true
       - yarn-install
       - test-ci
 
@@ -110,6 +113,7 @@ workflows:
             branches:
               only:
                 - master
+                - develop
           requires:
             - build
           matrix:
