@@ -9,7 +9,7 @@
     "build": "tsc",
     "clean": "rimraf dist documentation coverage",
     "test": "jest",
-    "test:ci": "jest --ci --collectCoverage --reporters=\"default\" --reporters=\"jest-junit\"",
+    "test:ci": "cross-env JEST_JUNIT_OUTPUT_DIR=test-results/jest jest --ci --collectCoverage --reporters=\"default\" --reporters=\"jest-junit\"",
     "build:docs": "typedoc --out documentation src",
     "semantic-release": "semantic-release"
   },
@@ -38,6 +38,7 @@
     "@types/jest": "^26.0.15",
     "@types/node": "^14.14.6",
     "coveralls": "^3.0.3",
+    "cross-env": "^7.0.2",
     "jest": "^26.6.1",
     "jest-extended": "^0.11.1",
     "jest-junit": "^12.0.0",

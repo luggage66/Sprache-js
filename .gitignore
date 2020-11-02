@@ -38,7 +38,10 @@ jspm_packages
 
 # built js
 dist/
+
+# docs
 documentation/
 
 # test results
 junit.xml
+test-results/
