@@ -2,8 +2,16 @@ version: 2.1
 
 executors:
   linux:
+    resource_class: small
     docker:
       - image: cimg/base:2020.01
+    working_directory: ~/sprache
+  node:
+    resource_class: small
+    docker:
+      - image: cimg/node:lts
+    working_directory: ~/sprache
+    
 
 orbs:
   node: circleci/node@2.0.0
@@ -60,10 +68,7 @@ commands:
 
 jobs:
   build:
-    docker:
-      - image: cimg/node:lts
-
-    working_directory: ~/sprache
+    executor: node
 
     steps:
       - checkout
@@ -73,10 +78,7 @@ jobs:
       - save-workspace
 
   publish:
-    docker:
-      - image: cimg/node:lts
-
-    working_directory: ~/sprache
+    executor: node
 
     steps:
       - load-workspace
