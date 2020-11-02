@@ -110,7 +110,6 @@ workflows:
             branches:
               only:
                 - master
-                - develop
           requires:
             - build
           matrix:
