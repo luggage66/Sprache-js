@@ -31,6 +31,32 @@ commands:
       - checkout
       - attach_workspace:
           at: <<parameters.attach_path>>
+  yarn-install:
+    steps:
+      - restore_cache:
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+
+      - run: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
+
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+  build:
+    steps:
+      - run: yarn build
+      - run: yarn build:docs
+  test-ci:
+    steps:
+      - run: yarn test:ci
+      - store_artifacts:
+          path: coverage
+      - store_test_results:
+          path: junit.xml
 
 jobs:
   build:
@@ -41,29 +67,9 @@ jobs:
 
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-v1-{{ .Branch }}-
-            - yarn-packages-v1-
-
-      - run: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
-
-      - save_cache:
-          paths:
-            - ~/.cache/yarn
-          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-
-      - run: yarn build
-
-      - store_artifacts:
-          path: coverage
-
-      - store_test_results:
-          path: junit.xml
-
+      - yarn-install
+      - build
+      - test-ci
       - save-workspace
 
   publish:
@@ -74,20 +80,7 @@ jobs:
 
     steps:
       - load-workspace
-
-      - restore_cache:
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-v1-{{ .Branch }}-
-            - yarn-packages-v1-
-
-      - run: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
-
-      - save_cache:
-          paths:
-            - ~/.cache/yarn
-          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - yarn-install
 
       - run:
           name: publish
@@ -117,7 +110,7 @@ jobs:
 
 workflows:
   version: 2
-  build-deploy:
+  build-publish:
     jobs:
       - build
       # - test:
@@ -128,5 +121,9 @@ workflows:
       #         os: [linux]
       #         node-version: ["10.23.0", "12.19.0", "14.15.0"]
       - publish:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - build
