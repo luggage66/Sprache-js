@@ -466,6 +466,13 @@ describe('parser of char', () => {
             .toThrow("Parsing failure: Unexpected 'end of input'; expected 'a' between 4 and 5 times, but found 3");
     });
 
+    it('should RepeatExactlyParserErrorMessagesAreReadable', () => {
+        const repeated = Parse.char('a').repeat(4);
+
+        expect(() => repeated.parse('aaa'))
+            .toThrow("Parsing failure: Unexpected 'end of input'; expected 'a' 4 times, but found 3");
+    });
+
     it('should CanParseSequence', () => {
         const sequence = Parse.char('a').delimitedBy(Parse.char(','));
         const r = sequence.tryParse('a,a,a');

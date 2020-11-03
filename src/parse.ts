@@ -322,9 +322,17 @@ const parserFunctions: ParserHelpers & ParserApi = {
                         : r.remainder.current.toString();
 
                     const msg = `Unexpected '${what}'`;
-                    const exp = `'${r.expectations!.join(
-                        ', '
-                    )}' between ${minimumCount} and ${maximumCount} times, but found ${n}`;
+                    let exp: string
+                    if (minimumCount === maximumCount) {
+                        exp = `'${r.expectations!.join(
+                            ', '
+                        )}' ${minimumCount} times, but found ${n}`;
+                    }
+                    else {
+                        exp = `'${r.expectations!.join(
+                            ', '
+                        )}' between ${minimumCount} and ${maximumCount} times, but found ${n}`;
+                    }
 
                     return Result.Failure<T[]>(i, msg, [exp]);
                 }
