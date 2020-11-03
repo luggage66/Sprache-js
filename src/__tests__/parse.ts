@@ -228,6 +228,45 @@ describe('parser of char', () => {
         });
     });
 
+    it('should XOptionalParserConsumesInputOnSuccessfulMatch', () => {
+        const optAbc = Parse.string('abc')
+            .text()
+            .xOptional();
+        const r = optAbc.tryParse("abcd");
+
+        expect(r).toMatchObject({
+            wasSuccessful: true,
+            remainder: {
+                position: 3
+            },
+            value: 'abc'
+        });
+    });
+
+    it('should XOptionalParserDoesNotConsumeInputOnFailedMatch', () => {
+        const optAbc = Parse.string('abc')
+            .text()
+            .xOptional();
+        const r = optAbc.tryParse("d");
+
+        expect(r).toMatchObject({
+            wasSuccessful: true,
+            remainder: {
+                position: 0
+            },
+            value: undefined
+        });
+    });
+
+    it('should XOptionalParserFailsOnPartialMatch', () => {
+        const optAbc = Parse.string('abc')
+            .text()
+            .xOptional();
+        
+        AssertParser.FailsAt(optAbc, 'abd', 2);
+        AssertParser.FailsAt(optAbc, 'aa', 1);
+    });
+
     it('should RegexParserConsumesInputOnSuccessfulMatch', () => {
         const digits = Parse.regex(/\d+/);
         const r = digits.tryParse('123d');

@@ -47,6 +47,7 @@ export interface ParserApi {
 
     atLeastOnce<T>(this: Parser<T>): Parser<T[]>;
     optional<T>(this: Parser<T>): Parser<T | undefined>;
+    xOptional<T>(this: Parser<T>): Parser<T | undefined>;
 
     text(this: Parser<string[]>): Parser<string>;
     named<T>(this: Parser<T>, name: string): Parser<T>;
@@ -236,6 +237,24 @@ const parserFunctions: ParserHelpers & ParserApi = {
             }
 
             return Result.Success(undefined, i);
+        });
+    },
+
+    xOptional<T>(this: Parser<T>): Parser<T | undefined> {
+        const parser = this;
+
+        return MakeParser(i => {
+            const pr = parser(i);
+
+            if (pr.wasSuccessful) {
+                return Result.Success(pr.value, pr.remainder);
+            }
+
+            if (pr.remainder.isEqual(i)) {
+                return Result.Success(undefined, i);
+            }
+
+            return Result.Failure(pr.remainder, pr.message!, pr.expectations);
         });
     },
 
