@@ -21,23 +21,9 @@
     "type": "git",
     "url": "https://github.com/luggage66/Sprache-js.git"
   },
-  "nyc": {
-    "extension": [
-      ".ts",
-      ".tsx"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "exclude": [
-      "**/*.d.ts"
-    ],
-    "all": true
-  },
   "devDependencies": {
     "@types/jest": "^26.0.15",
     "@types/node": "^14.14.6",
-    "coveralls": "^3.0.3",
     "cross-env": "^7.0.2",
     "jest": "^26.6.1",
     "jest-extended": "^0.11.1",
