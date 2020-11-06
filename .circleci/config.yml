@@ -1,15 +1,14 @@
 version: 2.1
 
 executors:
-  linux:
-    resource_class: small
-    docker:
-      - image: cimg/base:2020.01
-    working_directory: ~/sprache
   node:
     resource_class: small
+    parameters:
+      tag:
+        type: string
+        default: lts
     docker:
-      - image: cimg/node:lts
+      - image: circleci/node:<< parameters.tag >>
     working_directory: ~/sprache
     
 
@@ -60,19 +59,25 @@ commands:
       - run: yarn build
       - run: yarn build:docs
   test-ci:
+    parameters:
+      store-results:
+        type: boolean
+        default: true
     steps:
       - run: yarn test:ci
-      # - store_artifacts:
-      #     path: coverage
-      - store_test_results:
-          path: test-results
-      - codecov/upload:
-          file: coverage/lcov.info
+      - when:
+          condition: << parameters.store-results >>
+          steps:
+            # - store_artifacts:
+            #     path: coverage
+            - store_test_results:
+                path: test-results
+            - codecov/upload:
+                file: coverage/lcov.info
 
 jobs:
   build:
     executor: node
-
     steps:
       - checkout
       - yarn-install
@@ -82,46 +87,42 @@ jobs:
 
   publish:
     executor: node
-
     steps:
       - load-workspace
       - yarn-install
-
       - run:
           name: publish
           command: yarn run semantic-release || true
 
   test:
     parameters:
-      os:
-        type: executor
-      node-version:
+      node-tag:
         type: string
-    executor: << parameters.os >>
+    executor:
+      name: node
+      tag: << parameters.node-tag >>
     steps:
       - load-workspace
-      - node/install:
-          node-version: << parameters.node-version >>
-          install-yarn: true
       - yarn-install
-      - test-ci
+      - test-ci:
+          store-results: false
 
 workflows:
   version: 2
   build-publish:
     jobs:
       - build
-      # - test:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      #     requires:
-      #       - build
-      #     matrix:
-      #       parameters:
-      #         os: [linux]
-      #         node-version: ["10.23.0", "12.19.0", "14.15.0"]
+      - test:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+          requires:
+            - build
+          matrix:
+            parameters:
+              node-tag: ["dubnium", "erbium", "fermium"]
       - publish:
           filters:
             branches:
