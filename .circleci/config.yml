@@ -62,8 +62,8 @@ commands:
   test-ci:
     steps:
       - run: yarn test:ci
-      - store_artifacts:
-          path: coverage
+      # - store_artifacts:
+      #     path: coverage
       - store_test_results:
           path: test-results
       - codecov/upload:
