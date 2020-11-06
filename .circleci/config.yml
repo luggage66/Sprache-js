@@ -111,21 +111,21 @@ workflows:
   build-publish:
     jobs:
       - build
-      - test:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - build
-          matrix:
-            parameters:
-              os: [linux]
-              node-version: ["10.23.0", "12.19.0", "14.15.0"]
+      # - test:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - master
+      #     requires:
+      #       - build
+      #     matrix:
+      #       parameters:
+      #         os: [linux]
+      #         node-version: ["10.23.0", "12.19.0", "14.15.0"]
       - publish:
           filters:
             branches:
               only:
                 - master
           requires:
-            - test
+            - build
