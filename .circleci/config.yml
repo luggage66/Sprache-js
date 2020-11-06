@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  codecov: codecov/codecov@1.1.1
+
 executors:
   node:
     resource_class: small
@@ -10,11 +13,6 @@ executors:
     docker:
       - image: circleci/node:<< parameters.tag >>
     working_directory: ~/sprache
-    
-
-orbs:
-  node: circleci/node@2.0.0
-  codecov: codecov/codecov@1.1.1
 
 commands:
   save-workspace:
@@ -30,6 +28,7 @@ commands:
             - "documentation"
             - "coverage"
             - "junit.xml"
+
   load-workspace:
     parameters:
       attach_path:
@@ -39,6 +38,7 @@ commands:
       - checkout
       - attach_workspace:
           at: <<parameters.attach_path>>
+
   yarn-install:
     steps:
       - restore_cache:
@@ -47,17 +47,17 @@ commands:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - yarn-packages-v1-{{ .Branch }}-
             - yarn-packages-v1-
-
       - run: yarn --frozen-lockfile --cache-folder ~/.cache/yarn
-
       - save_cache:
           paths:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
   build:
     steps:
       - run: yarn build
       - run: yarn build:docs
+
   test-ci:
     parameters:
       store-results:
@@ -75,6 +75,12 @@ commands:
             - codecov/upload:
                 file: coverage/lcov.info
 
+  publish:
+    steps:
+      - run:
+          name: Publish via semantic-release
+          command: yarn run semantic-release
+
 jobs:
   build:
     executor: node
@@ -84,15 +90,6 @@ jobs:
       - build
       - test-ci
       - save-workspace
-
-  publish:
-    executor: node
-    steps:
-      - load-workspace
-      - yarn-install
-      - run:
-          name: publish
-          command: yarn run semantic-release || true
 
   test:
     parameters:
@@ -107,9 +104,16 @@ jobs:
       - test-ci:
           store-results: false
 
+  publish:
+    executor: node
+    steps:
+      - load-workspace
+      - yarn-install
+      - publish
+
 workflows:
   version: 2
-  build-publish:
+  build:
     jobs:
       - build
       - test:
@@ -129,4 +133,4 @@ workflows:
               only:
                 - master
           requires:
-            - build
+            - test
