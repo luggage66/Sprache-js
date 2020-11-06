@@ -4,6 +4,7 @@
 sprache.js is a TypeScript port of [Sprache](https://github.com/sprache/Sprache), a simple parser for C#
 
 [![<Sprache>](https://circleci.com/gh/luggage66/Sprache-js.svg?style=shield)](<https://app.circleci.com/pipelines/github/luggage66/Sprache-js?branch=master>)
+[![codecov](https://codecov.io/gh/luggage66/Sprache-js/branch/develop/graph/badge.svg?token=MHJDKKG47D)](https://codecov.io/gh/luggage66/Sprache-js)
 
 ```sh
 npm install sprache --save
