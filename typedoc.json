@@ -1,9 +1,7 @@
 {
-    "excludeExternals": true,
-    "excludeNotExported": true,
-    "includeDeclarations": true,
-    "src": [
-        "src"
+    "entryPoints": [
+        "src/index.ts",
+        "README.md"
     ],
     "exclude": [
         "**/__tests__/**/*.ts",
