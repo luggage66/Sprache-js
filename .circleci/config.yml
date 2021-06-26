@@ -9,7 +9,7 @@ executors:
     parameters:
       tag:
         type: string
-        default: lts
+        default: current
     docker:
       - image: circleci/node:<< parameters.tag >>
     working_directory: ~/sprache
@@ -126,7 +126,7 @@ workflows:
             - build
           matrix:
             parameters:
-              node-tag: ["dubnium", "erbium", "fermium"]
+              node-tag: ["current", "lts"]
       - publish:
           filters:
             branches:
