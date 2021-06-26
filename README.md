@@ -48,6 +48,16 @@ More examples are available in [src/examples/](https://github.com/luggage66/Spra
 
 ## Building / Running examples
 
+Requirements:
+
+* NodeJS
+* yarn
+
+```sh
+winget install OpenJS.NodeJS
+winget install Yarn.Yarn
+```
+
 ```sh
 yarn install
 yarn run build
