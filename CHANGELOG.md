@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/luggage66/Sprache-js/compare/v1.2.0...v1.2.1) (2021-09-10)
+
+
+### Bug Fixes
+
+* update deps ([5d52a4d](https://github.com/luggage66/Sprache-js/commit/5d52a4de0d6796b991784d561ae947156d69707a))
+
 # [1.2.0](https://github.com/luggage66/Sprache-js/compare/v1.1.0...v1.2.0) (2020-11-06)
 
 
