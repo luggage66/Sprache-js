@@ -40,7 +40,7 @@ export interface ParserApi {
     select<T, U>(this: Parser<T>, convert: (_: T) => U): Parser<U>;
     then<T, U>(this: Parser<T>, second: (_: T) => Parser<U>): Parser<U>;
     once<T>(this: Parser<T>): Parser<T[]>;
-    or<T>(this: Parser<T>, second: Parser<T>): Parser<T>;
+    or<T, U>(this: Parser<T>, second: Parser<U>): Parser<T | U>;
     xOr<T>(this: Parser<T>, second: Parser<T>): Parser<T>;
     xMany<T>(this: Parser<T>): Parser<T[]>;
     not<T>(this: Parser<T>): Parser<any>;
@@ -152,7 +152,7 @@ const parserFunctions: ParserHelpers & ParserApi = {
         return parser.select((r: T) => [r]);
     },
 
-    or<T>(this: Parser<T>, second: Parser<T>): Parser<T> {
+    or<T, U>(this: Parser<T>, second: Parser<U>): Parser<T | U> {
         const first = this;
 
         return MakeParser(i => {
