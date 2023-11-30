@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/luggage66/Sprache-js/compare/v1.2.1...v1.2.2) (2023-11-30)
+
+
+### Bug Fixes
+
+* or types incorrect ([2d19765](https://github.com/luggage66/Sprache-js/commit/2d19765febb740b2bb4d6edf80c229d61eb104ac))
+
 ## [1.2.1](https://github.com/luggage66/Sprache-js/compare/v1.2.0...v1.2.1) (2021-09-10)
 
 
